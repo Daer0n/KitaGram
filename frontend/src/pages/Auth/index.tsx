@@ -1,5 +1,10 @@
-import { Container } from "./styled";
+import { Container } from './styled';
+import { Login } from '@components/Login';
 
 export const Auth = () => {
-    return <Container>Auth page</Container>;
+    return (
+        <Container>
+            <Login></Login>
+        </Container>
+    );
 };

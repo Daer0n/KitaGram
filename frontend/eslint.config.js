@@ -4,7 +4,6 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { ESLint } from 'eslint';
 
-// Importing the recommended rules directly from the eslint-plugin
 import tsConfig from '@typescript-eslint/eslint-plugin/dist/configs/recommended.json';
 
 export default ESLint.config({
