@@ -1,5 +1,10 @@
-import { Container } from "./styled";
+import { Container } from './styled';
+import { RegistrationForm } from '@components/RegistrationForm';
 
 export const Registration = () => {
-    return <Container>Register page</Container>;
+    return (
+        <Container>
+            <RegistrationForm />
+        </Container>
+    );
 };

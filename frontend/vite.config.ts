@@ -12,6 +12,7 @@ export default defineConfig({
             '@constants': resolve(__dirname, 'src/constants'),
             '@assets': resolve(__dirname, 'src/assets'),
             '@hooks': resolve(__dirname, 'src/hooks'),
+            '@api': resolve(__dirname, 'src/api'),
         },
     },
 });

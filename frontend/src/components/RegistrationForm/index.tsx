@@ -1,24 +1,24 @@
 import { useState } from 'react';
-import Logo from '@assets/images/Logo.svg';
 import KitaGram from '@assets/images/KitaGram.svg';
 import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
-import { useNavigate } from 'react-router-dom';
+import BackIcon from '@assets/images/BackIcon.svg';
 import {
     Container,
     Content,
-    InputContainer,
-    Title,
     Input,
+    InputContainer,
     LogoContainer,
     Button,
-    RegistrationContainer,
-    Registration,
+    BackButton,
 } from './styled';
+import { useNavigate } from 'react-router-dom';
 
-export const Login = () => {
+export const RegistrationForm = () => {
     const [mail, setMail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
     const navigate = useNavigate();
     const [fetchData, isLoading, error] = useFetching(async () => {
         setTimeout(() => console.log('Jood jobski'), 3000);
@@ -32,14 +32,35 @@ export const Login = () => {
         setPassword(event.target.value);
     };
 
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+    };
+
+    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSurname(event.target.value);
+    };
+
+    const handleBackClick = () => {
+        navigate('/');
+    };
+
     return (
         <Container>
             <Content>
+                <BackButton onClick={handleBackClick}>
+                    <img src={BackIcon} alt="Назад" />
+                </BackButton>
                 <LogoContainer>
                     <img src={KitaGram} alt="Логотип" />
                 </LogoContainer>
 
-                <Title>Введите данные от аккаунта</Title>
+                <InputContainer>
+                    <Input placeholder="Имя" onChange={handleNameChange} value={name} />
+                </InputContainer>
+
+                <InputContainer>
+                    <Input placeholder="Фамилия" onChange={handleSurnameChange} value={surname} />
+                </InputContainer>
 
                 <InputContainer>
                     <Input placeholder="Почта" onChange={handleMailChange} value={mail} />
@@ -51,14 +72,7 @@ export const Login = () => {
 
                 {isLoading && <Loader />}
 
-                <Button onClick={fetchData}>Войти</Button>
-
-                <RegistrationContainer>
-                    Нет аккаунта?{' '}
-                    <Registration onClick={() => navigate('/registration')}>
-                        Регистрация
-                    </Registration>
-                </RegistrationContainer>
+                <Button onClick={fetchData}>Регистрация</Button>
             </Content>
         </Container>
     );

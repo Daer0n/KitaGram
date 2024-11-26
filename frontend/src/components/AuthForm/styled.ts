@@ -11,10 +11,8 @@ export const Container = styled.div`
 
 export const Content = styled.div`
     width: 20%;
-    height: 70%;
+    height: 80%;
     border: 1px solid var(--Grey-Grey-500, #dee2e6);
-    /* background: var(--Gradient-Linear, linear-gradient(90deg, #2460bc 0%, #478efa 100%));
-    border-radius: 20px; */
     padding: 40px;
     display: flex;
     justify-content: center;

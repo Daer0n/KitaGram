@@ -1,10 +1,10 @@
 import { Container } from './styled';
-import { Login } from '@components/Login';
+import { AuthForm } from '@components/AuthForm';
 
 export const Auth = () => {
     return (
         <Container>
-            <Login></Login>
+            <AuthForm />
         </Container>
     );
 };
