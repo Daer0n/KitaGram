@@ -7,6 +7,7 @@ export const Router = () => {
             <Routes>
                 <Route path={ROUTES.auth.route} element={ROUTES.auth.element} />
                 <Route path={ROUTES.registration.route} element={ROUTES.registration.element} />
+                <Route path={ROUTES.home.route} element={ROUTES.home.element} />
             </Routes>
         </BrowserRouter>
     );
