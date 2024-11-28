@@ -3,17 +3,20 @@ import Rooms from '@assets/images/Rooms.svg';
 import Options from '@assets/images/Options.svg';
 import Home from '@assets/images/Home.svg';
 import NewRoom from '@assets/images/NewRoom.svg';
+import { useNavigate } from 'react-router-dom';
 import { Container, Icon, IconContainer, LogoContainer } from './styled';
 
 export const Header = () => {
+    const navigate = useNavigate();
+
     return (
         <Container>
-            <LogoContainer>
+            <LogoContainer onClick={() => navigate('/home')}>
                 <img src={Logo} alt="Home" />
             </LogoContainer>
 
             <IconContainer>
-                <Icon>
+                <Icon onClick={() => navigate('/home')}>
                     <img src={Home} alt="Home" />
                 </Icon>
 
@@ -24,7 +27,7 @@ export const Header = () => {
                     <img src={Rooms} alt="Rooms" />
                 </Icon>
 
-                <Icon>
+                <Icon onClick={() => navigate('/options')}>
                     <img src={Options} alt="Options" />
                 </Icon>
             </IconContainer>

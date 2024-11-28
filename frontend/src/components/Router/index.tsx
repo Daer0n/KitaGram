@@ -5,9 +5,9 @@ export const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={ROUTES.auth.route} element={ROUTES.auth.element} />
-                <Route path={ROUTES.registration.route} element={ROUTES.registration.element} />
-                <Route path={ROUTES.home.route} element={ROUTES.home.element} />
+                {Object.values(ROUTES).map((route, index) => (
+                    <Route key={index} path={route.route} element={route.element} />
+                ))}
             </Routes>
         </BrowserRouter>
     );
