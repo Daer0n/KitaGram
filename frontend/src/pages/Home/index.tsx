@@ -1,16 +1,17 @@
-// Home.tsx
-import { Container } from './styled'; // Styled Container
-import { Header } from '@components/Header'; // Assuming Header component is in @components/Headerim
+
+import { Header } from '@components/Header';
+import { Footer } from '@components/Footer';
 import { RoomList } from '@components/RoomList';
+import { Container, Content } from './styled';
 
 export const Home = () => {
-  return (
-    <Container>
-      {/* Header Component */}
-      <Header />
-      
-      {/* Rooms List Component */}
-      <RoomList />
-    </Container>
-  );
+    return (
+        <Container>
+            <Header />
+            <RoomList />
+            <Content>as</Content>
+
+            <Footer />
+        </Container>
+    );
 };
