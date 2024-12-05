@@ -13,6 +13,7 @@ export default defineConfig({
             '@assets': resolve(__dirname, 'src/assets'),
             '@hooks': resolve(__dirname, 'src/hooks'),
             '@api': resolve(__dirname, 'src/api'),
+            '@types': resolve(__dirname, 'src/types'),
         },
     },
 });

@@ -30,7 +30,8 @@
             "@constants": ["src/constants"],
             "@assets/*": ["src/assets/*"],
             "@hooks": ["src/hooks"],
-            "@api": ["src/api"]
+            "@api": ["src/api"],
+            "@types": ["src/types"]
         }
     },
     "include": ["src"]

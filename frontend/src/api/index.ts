@@ -1,15 +1,17 @@
+import { User } from '@types';
+
 export const API = {
     baseUrl: 'http://localhost:8000',
 
-    logIn(name: string, password: string) {
+    async signIn(user: Pick<User, 'nickname' | 'password'>) {
         const signInRequest = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                nickname: name,
-                password: password,
+                nickname: user.nickname,
+                password: user.password,
             }),
         };
 
@@ -17,6 +19,24 @@ export const API = {
             .then((response) => response.json())
             .catch((error) => {
                 console.error('Error during login:', error);
+            });
+    },
+
+    async signUp(user: Pick<User, 'nickname' | 'email' | 'password'>) {
+        const signUpRequest = {
+            method: 'POST',
+            body: JSON.stringify({
+                deviceToken: 'a6195f35-e874-448c-b603-a22e70b7755a',
+                email: user.email,
+                nickname: user.nickname,
+                password: user.password,
+            }),
+        };
+
+        return fetch(`${this.baseUrl}/auth/sign_up`, signUpRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during sign up:', error);
             });
     },
 };

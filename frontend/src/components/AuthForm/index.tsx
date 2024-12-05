@@ -18,16 +18,17 @@ import {
 } from './styled';
 
 export const AuthForm = () => {
-    const [mail, setMail] = useState('');
+    const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const [fetchData, isLoading, error] = useFetching(async () => {
+    const [fetchData, isLoading] = useFetching(async () => {
         try {
-            const data = await API.logIn(mail, password);
+            const data = await API.signIn({ nickname, password });
             if (!data.user) {
                 throw new Error('Пользователь не найден');
             }
+
             console.log(data);
         } catch (err) {
             notification.error({
@@ -37,8 +38,8 @@ export const AuthForm = () => {
         }
     });
 
-    const handleMailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMail(event.target.value);
+    const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(event.target.value);
     };
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,11 +56,16 @@ export const AuthForm = () => {
                 <Title>Введите данные от аккаунта</Title>
 
                 <InputContainer>
-                    <Input placeholder="Почта" onChange={handleMailChange} value={mail} />
+                    <Input placeholder="Никнейм" onChange={handleNicknameChange} value={nickname} />
                 </InputContainer>
 
                 <InputContainer>
-                    <Input placeholder="Пароль" onChange={handlePasswordChange} value={password} />
+                    <Input
+                        type="password"
+                        placeholder="Пароль"
+                        onChange={handlePasswordChange}
+                        value={password}
+                    />
                 </InputContainer>
 
                 {isLoading && <Loader />}
