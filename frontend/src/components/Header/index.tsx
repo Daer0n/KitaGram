@@ -20,7 +20,7 @@ export const Header = () => {
                     <img src={Home} alt="Home" />
                 </Icon>
 
-                <Icon>
+                <Icon onClick={() => navigate('/create-room')}>
                     <img src={NewRoom} alt="NewRoom" />
                 </Icon>
                 <Icon>

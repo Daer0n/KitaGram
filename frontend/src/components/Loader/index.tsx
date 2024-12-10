@@ -1,5 +1,9 @@
-import { StyledLoader } from './styled';
+import { StyledLoader, Container } from './styled';
 
 export const Loader = () => {
-    return <StyledLoader />;
+    return (
+        <Container>
+            <StyledLoader />
+        </Container>
+    );
 };

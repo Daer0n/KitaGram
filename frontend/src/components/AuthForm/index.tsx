@@ -4,6 +4,7 @@ import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
+import Cookies from 'js-cookie';
 import { API } from '@api';
 import {
     Container,
@@ -18,17 +19,23 @@ import {
 } from './styled';
 
 export const AuthForm = () => {
-    const [mail, setMail] = useState('');
+    const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const [fetchData, isLoading, error] = useFetching(async () => {
+    const [fetchData, isLoading] = useFetching(async () => {
         try {
-            const data = await API.logIn(mail, password);
-            if (!data.user) {
-                throw new Error('Пользователь не найден');
-            }
+            const data = await API.signIn({ nickname, password });
             console.log(data);
+            if (!data.userID) {
+                throw new Error(data.message);
+            }
+
+            Cookies.set('access_token', data.access_token, { expires: 7 });
+            Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
+            Cookies.set('userID', data.userID, { expires: 7 });
+
+            navigate('/home');
         } catch (err) {
             notification.error({
                 message: 'Ошибка входа',
@@ -37,13 +44,15 @@ export const AuthForm = () => {
         }
     });
 
-    const handleMailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMail(event.target.value);
+    const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(event.target.value);
     };
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
+
+    console.log(Cookies.get('access_token'));
 
     return (
         <Container>
@@ -55,11 +64,16 @@ export const AuthForm = () => {
                 <Title>Введите данные от аккаунта</Title>
 
                 <InputContainer>
-                    <Input placeholder="Почта" onChange={handleMailChange} value={mail} />
+                    <Input placeholder="Никнейм" onChange={handleNicknameChange} value={nickname} />
                 </InputContainer>
 
                 <InputContainer>
-                    <Input placeholder="Пароль" onChange={handlePasswordChange} value={password} />
+                    <Input
+                        type="password"
+                        placeholder="Пароль"
+                        onChange={handlePasswordChange}
+                        value={password}
+                    />
                 </InputContainer>
 
                 {isLoading && <Loader />}

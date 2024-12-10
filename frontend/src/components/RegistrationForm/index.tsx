@@ -3,6 +3,8 @@ import KitaGram from '@assets/images/KitaGram.svg';
 import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
 import BackIcon from '@assets/images/BackIcon.svg';
+import { notification } from 'antd';
+import { API } from '@api';
 import {
     Container,
     Content,
@@ -15,29 +17,40 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 export const RegistrationForm = () => {
-    const [mail, setMail] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
+    const [nickname, setNickname] = useState('');
     const navigate = useNavigate();
-    const [fetchData, isLoading, error] = useFetching(async () => {
-        setTimeout(() => console.log('Jood jobski'), 3000);
+    const [fetchData, isLoading] = useFetching(async () => {
+        try {
+            const data = await API.signUp({ email, nickname, password });
+
+            if (data.code === 'NICKNAME_AND_EMAIL_EXISTS') {
+                throw new Error('Ошибка регистрации');
+            }
+
+            notification.success({
+                message: 'Регистрация успешна',
+                description: 'Вы успешно зарегистрированы! Перейдите к аутентификации.',
+            });
+        } catch (err) {
+            notification.error({
+                message: 'Ошибка регистрации',
+                description: 'Данный пользователь существует',
+            });
+        }
     });
 
     const handleMailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMail(event.target.value);
+        setEmail(event.target.value);
     };
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
 
-    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
-    };
-
-    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSurname(event.target.value);
+    const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNickname(event.target.value);
     };
 
     const handleBackClick = () => {
@@ -55,19 +68,20 @@ export const RegistrationForm = () => {
                 </LogoContainer>
 
                 <InputContainer>
-                    <Input placeholder="Имя" onChange={handleNameChange} value={name} />
+                    <Input placeholder="Никнейм" onChange={handleNicknameChange} value={nickname} />
                 </InputContainer>
 
                 <InputContainer>
-                    <Input placeholder="Фамилия" onChange={handleSurnameChange} value={surname} />
+                    <Input placeholder="Почта" onChange={handleMailChange} value={email} />
                 </InputContainer>
 
                 <InputContainer>
-                    <Input placeholder="Почта" onChange={handleMailChange} value={mail} />
-                </InputContainer>
-
-                <InputContainer>
-                    <Input placeholder="Пароль" onChange={handlePasswordChange} value={password} />
+                    <Input
+                        type="password"
+                        placeholder="Пароль"
+                        onChange={handlePasswordChange}
+                        value={password}
+                    />
                 </InputContainer>
 
                 {isLoading && <Loader />}
