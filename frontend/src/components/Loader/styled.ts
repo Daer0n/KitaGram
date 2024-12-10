@@ -9,8 +9,17 @@ const rotate = keyframes`
     }
 `;
 
+export const Container = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 1000;
+`;
+
 export const StyledLoader = styled.div`
-    margin-top: 100px;
     width: 60px;
     height: 60px;
     border-radius: 50%;

@@ -2,6 +2,7 @@ import { Auth } from '@pages/Auth';
 import { Registration } from '@pages/Registration';
 import { Home } from '@pages/Home';
 import { Options } from '@pages/Options';
+import { CreateRoom } from '@pages/CreateRoom';
 
 export const ROUTES = {
     auth: {
@@ -19,5 +20,9 @@ export const ROUTES = {
     options: {
         route: '/options',
         element: <Options />,
+    },
+    createRoom: {
+        route: '/create-room',
+        element: <CreateRoom />,
     },
 };

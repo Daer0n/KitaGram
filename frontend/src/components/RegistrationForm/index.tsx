@@ -24,11 +24,15 @@ export const RegistrationForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await API.signUp({ email, nickname, password });
-            if (!data.user) {
-                throw new Error('Пользователь не найден');
+
+            if (data.code === 'NICKNAME_AND_EMAIL_EXISTS') {
+                throw new Error('Ошибка регистрации');
             }
 
-            console.log(data);
+            notification.success({
+                message: 'Регистрация успешна',
+                description: 'Вы успешно зарегистрированы! Перейдите к аутентификации.',
+            });
         } catch (err) {
             notification.error({
                 message: 'Ошибка регистрации',

@@ -4,6 +4,7 @@ import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
+import Cookies from 'js-cookie';
 import { API } from '@api';
 import {
     Container,
@@ -25,11 +26,16 @@ export const AuthForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await API.signIn({ nickname, password });
-            if (!data.user) {
-                throw new Error('Пользователь не найден');
+            console.log(data);
+            if (!data.userID) {
+                throw new Error(data.message);
             }
 
-            console.log(data);
+            Cookies.set('access_token', data.access_token, { expires: 7 });
+            Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
+            Cookies.set('userID', data.userID, { expires: 7 });
+
+            navigate('/home');
         } catch (err) {
             notification.error({
                 message: 'Ошибка входа',
@@ -45,6 +51,8 @@ export const AuthForm = () => {
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
+
+    console.log(Cookies.get('access_token'));
 
     return (
         <Container>
