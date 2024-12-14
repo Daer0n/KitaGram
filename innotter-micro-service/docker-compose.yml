@@ -1,0 +1,41 @@
+version: '3.9'
+
+
+services:
+
+  innotter-db:
+    container_name: innotter-db
+    image: postgres:13.7-alpine
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
+    networks:
+      - internship-net
+
+  innotter-app:
+    container_name: innotter-app
+    build:
+      context: .
+      network: host
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app:/usr/src/app
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    depends_on:
+      - innotter-db
+    networks:
+      - internship-net
+
+    environment:
+      - SQL_HOST=innotter-db
+      - SQL_PORT=5433
+
+networks:
+  internship-net:
+    driver: bridge
