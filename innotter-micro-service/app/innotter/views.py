@@ -1,8 +1,12 @@
 from uuid import UUID
 from django.db.models import Q
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+import boto3
+
+from app.config import settings
 
 from innotter.models import Participant, Room, Tag
 from innotter.paginations import CustomPageNumberPagination
@@ -68,7 +72,8 @@ class RoomViewSet(viewsets.ModelViewSet):
         user_id = get_user_info(self.request).get("id")
         response = None
         if Participant.objects.join(room, user_id):
-            response = Response({"message": f"You are now following page {room.id}."})
+            response = Response(
+                {"message": f"You are now following page {room.id}."})
         else:
             response = Response(
                 {"message": f"You are already following page {room.id}."}
@@ -81,9 +86,11 @@ class RoomViewSet(viewsets.ModelViewSet):
         user_id = get_user_info(self.request).get("id")
         response = None
         if Participant.objects.leave(room, user_id):
-            response = Response({"message": f"You no longer following page {room.id}."})
+            response = Response(
+                {"message": f"You no longer following page {room.id}."})
         else:
-            response = Response({"message": f"You are not following page {room.id}."})
+            response = Response(
+                {"message": f"You are not following page {room.id}."})
         return response
 
     @action(detail=True, methods=["get"])
@@ -92,16 +99,17 @@ class RoomViewSet(viewsets.ModelViewSet):
         participants = Participant.objects.filter(room=room)
         serializer = ParticipantSerializer(participants, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def joined(self, request, pk=None):
         user = get_user_info(self.request)
         user_id = user["id"]
-        room_ids = Participant.objects.filter(user_id=user_id).values_list("room")
+        room_ids = Participant.objects.filter(
+            user_id=user_id).values_list("room")
         rooms = Room.objects.filter(id__in=room_ids)
         serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def my(self, request, pk=None):
         user = get_user_info(self.request)
@@ -117,3 +125,37 @@ class TagViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Generi
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
+
+class PhotoViewSet(viewsets.ViewSet):
+    def __init__(self):
+        self.s3_client = boto3.client(
+            "s3",
+            endpoint_url=settings.AWS["default"].AWS_URL,
+            aws_access_key_id=settings.AWS["default"].AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS["default"].AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS["default"].AWS_REGION_NAME,
+        )
+        self.bucket = settings.S3_BUCKET
+
+    @action(detail=False, methods=["post"])
+    async def upload_photo(self, request, pk=None):
+        user = get_user_info(self.request)
+
+        img_file = request.FILES.get('image')
+
+        if img_file:
+            return Response({"error": "user_id and image are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user_id = UUID(user["id"])
+
+            s3_key = f"uploads/{user_id}/{img_file.name}"
+
+            self.s3_client.upload_fileobj(img_file, self.bucket, s3_key)
+
+            url = f"{settings.AWS_URL}/{self.bucket}/{s3_key}"
+            return Response({"url": url}, status=status.HTTP_201_CREATED)
+        except ValueError:
+            return Response({"error": "Invalid user_id format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
