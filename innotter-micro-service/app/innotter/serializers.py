@@ -16,6 +16,7 @@ class RoomSerializer(serializers.ModelSerializer):
             "description",
             "image_url",
             "tags",
+            "datetime",
             "participants",
             "participants_limit",
             "created_at",
