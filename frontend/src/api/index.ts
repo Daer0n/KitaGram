@@ -117,6 +117,58 @@ export const API = {
             .catch((error) => {
                 console.error('Error during fetching rooms:', error);
                 throw error
+
+    async getTags() {
+        const accessToken = Cookies.get('access_token');
+        const getTagsRequest = {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+
+        return fetch(`${this.baseUrl}tags/get_tags`, getTagsRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during get tags', error);
+            });
+    },
+
+    async getCategories() {
+        const accessToken = Cookies.get('access_token');
+        const getCategoriesRequest = {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify({
+            //     categoriesID: [
+            //         'cca7c4b2-f3ac-4caa-9b72-2df4f6e91f93',
+            //         '8c6f025f-b414-481d-b57b-5e226e90f105',
+            //     ],
+            // }),
+        };
+        return fetch(`${this.baseUrl}categories/get_open_room_categories`, getCategoriesRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during get tags', error);
+            });
+    },
+
+    async getOpenRooms() {
+        const accessToken = Cookies.get('access_token');
+        const getTagsRequest = {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+
+        return fetch(`${this.baseUrl}opRoom/get_open_rooms`, getTagsRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during get rooms', error);
             });
     },
 };

@@ -26,7 +26,6 @@ export const AuthForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await API.signIn({ nickname, password });
-            console.log(data);
             if (!data.userID) {
                 throw new Error(data.message);
             }
@@ -51,8 +50,6 @@ export const AuthForm = () => {
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
-
-    console.log(Cookies.get('access_token'));
 
     return (
         <Container>

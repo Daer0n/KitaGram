@@ -1,32 +1,53 @@
-import React from 'react';
-import { DatePicker, TimePicker, Typography } from 'antd';
-import moment from 'moment';
+import React, { useEffect } from 'react';
+import { DatePicker, TimePicker } from 'antd';
+import dayjs from 'dayjs';
 import { Container, Picker } from './styled';
 
-const { Title, Text } = Typography;
-
 interface DateTimeSelectorProps {
-    selectedDate: moment.Moment | null;
-    selectedTime: moment.Moment | null;
-    onDateChange: (date: moment.Moment | null) => void;
-    onTimeChange: (time: moment.Moment | null) => void;
+    dateTime: dayjs.Dayjs | null; 
+    setDateTime: (dateTime: dayjs.Dayjs | null) => void; 
 }
 
-export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
-    selectedDate,
-    selectedTime,
-    onDateChange,
-    onTimeChange,
-}) => {
+export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({ dateTime, setDateTime }) => {
+    useEffect(() => {
+        dayjs.locale('ru'); 
+    }, []);
+
+    const handleDateChange = (date: dayjs.Dayjs | null) => {
+        if (dateTime && date) {
+            setDateTime(date.hour(dateTime.hour()).minute(dateTime.minute()));
+        } else {
+            setDateTime(date); 
+        }
+    };
+
+    const handleTimeChange = (time: dayjs.Dayjs | null) => {
+        if (dateTime && time) {
+            setDateTime(time.minute(dateTime.minute()));
+        } else {
+            setDateTime(time);
+        }
+    };
+
     return (
         <Container>
             <Picker>
-                <Title level={4}>Выберите дату</Title>
-                <DatePicker value={selectedDate} onChange={onDateChange} format="DD.MM.YYYY" />
+                <DatePicker
+                    value={dateTime}
+                    onChange={handleDateChange}
+                    placeholder="Выберите дату"
+                    format="D MMMM"
+                    style={{ width: '100%' }}
+                />
             </Picker>
             <Picker>
-                <Text>Начало: </Text>
-                <TimePicker value={selectedTime} onChange={onTimeChange} format="HH:mm" />
+                <TimePicker
+                    value={dateTime}
+                    onChange={handleTimeChange}
+                    placeholder="Выберите время"
+                    format="HH:mm"
+                    style={{ width: '100%' }}
+                />
             </Picker>
         </Container>
     );
