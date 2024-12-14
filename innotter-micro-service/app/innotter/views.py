@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 import boto3
 
-from app.config import settings
+from django.conf import settings
 
 from innotter.models import Participant, Room, Tag
 from innotter.paginations import CustomPageNumberPagination
@@ -127,33 +127,31 @@ class TagViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Generi
 
 
 class PhotoViewSet(viewsets.ViewSet):
-    def __init__(self):
+    permission_classes = [JWTAuthentication]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.s3_client = boto3.client(
             "s3",
-            endpoint_url=settings.AWS["default"].AWS_URL,
-            aws_access_key_id=settings.AWS["default"].AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS["default"].AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS["default"].AWS_REGION_NAME,
+            endpoint_url=settings.AWS["default"]["AWS_URL"],
+            aws_access_key_id=settings.AWS["default"]["AWS_ACCESS_KEY"],
+            aws_secret_access_key=settings.AWS["default"]["AWS_SECRET_ACCESS_KEY"],
+            region_name=settings.AWS["default"]["AWS_REGION_NAME"],
         )
-        self.bucket = settings.S3_BUCKET
+        self.bucket = settings.AWS["default"]["BUCKET"]
 
     @action(detail=False, methods=["post"])
-    async def upload_photo(self, request, pk=None):
+    def upload_photo(self, request, pk=None):
         user = get_user_info(self.request)
 
         img_file = request.FILES.get('image')
-
-        if img_file:
-            return Response({"error": "user_id and image are required"}, status=status.HTTP_400_BAD_REQUEST)
-
+        if not img_file:
+            return Response({"error": "image are required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user_id = UUID(user["id"])
-
             s3_key = f"uploads/{user_id}/{img_file.name}"
-
             self.s3_client.upload_fileobj(img_file, self.bucket, s3_key)
-
-            url = f"{settings.AWS_URL}/{self.bucket}/{s3_key}"
+            url = f"http://localhost:4566/{self.bucket}/{s3_key}"
             return Response({"url": url}, status=status.HTTP_201_CREATED)
         except ValueError:
             return Response({"error": "Invalid user_id format"}, status=status.HTTP_400_BAD_REQUEST)
