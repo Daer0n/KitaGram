@@ -41,32 +41,58 @@ export const RoomsImg = styled.img`
 
 export const RoomsDataContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 100px;
+  grid-template-columns: 4fr 1fr;
   padding: 5px 10px;
-  grid-template-areas:
-  "a a a b"
-  "a a a c";
+`;
+
+export const RoomGeneralData = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+
+export const RoomDateTime = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 // Room title styling
 export const RoomTitle = styled.span`
-  grid-area: a;
   display: flex;
-
   align-items: center;
   font-size: 24px;
   font-weight: bold;
+`;
 
+export const RoomType = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
+export const RoomUsers = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+export const RoomUsersImg = styled.img`
+  height: 13px;
+  width: auto;
+  object-fit: contain;
+  filter: invert(1);
 `;
 
 
-export const RoomDetails = styled.div`
-  grid-area: b;
+export const RoomDate = styled.div`
   font-size: 18px;
 `;
 
 export const RoomTime = styled.div`
   font-size: 18px;
   font-weight: bold;
-  grid-area: c;
 `;
+

@@ -16,4 +16,13 @@ export default defineConfig({
             '@types': resolve(__dirname, 'src/types'),
         },
     },
+    server: {
+        proxy: {
+            '/opRoom': {
+                target: 'http://158.220.107.252',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/opRoom/, ''),
+            },
+        },
+    },
 });

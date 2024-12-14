@@ -74,6 +74,7 @@ export const BackButton = styled.button`
     border: none;
     cursor: pointer;
     z-index: 10;
+    border: 2px solid #ccc;
 
     img {
         width: 24px;
