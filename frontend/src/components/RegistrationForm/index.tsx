@@ -4,7 +4,7 @@ import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
 import BackIcon from '@assets/images/BackIcon.svg';
 import { notification } from 'antd';
-import { API } from '@api';
+import { UserAPI } from '@api';
 import {
     Container,
     Content,
@@ -15,6 +15,7 @@ import {
     BackButton,
 } from './styled';
 import { useNavigate } from 'react-router-dom';
+import { User } from '@types';
 
 export const RegistrationForm = () => {
     const [email, setEmail] = useState('');
@@ -23,11 +24,9 @@ export const RegistrationForm = () => {
     const navigate = useNavigate();
     const [fetchData, isLoading] = useFetching(async () => {
         try {
-            const data = await API.signUp({ email, nickname, password });
-
-            if (data.code === 'NICKNAME_AND_EMAIL_EXISTS') {
-                throw new Error('Ошибка регистрации');
-            }
+            const user: User = { email, nickname, password };
+            const data = await UserAPI.signUp(user);
+            console.log(data);
 
             notification.success({
                 message: 'Регистрация успешна',

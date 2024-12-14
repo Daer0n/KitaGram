@@ -11,22 +11,41 @@ import {
     Button,
 } from './styled';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { UserAPI } from '@api';
 
 export const OptionsForm = () => {
     const navigate = useNavigate();
+    const [photo, setPhoto] = useState<string>(DefaultAvatar);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await UserAPI.getInfo();
+
+                if (data.img_path !== 'https://example.com') {
+                    setPhoto(data.img_path);
+                }
+            } catch (error) {
+                console.error('Ошибка при получении данных:', error);
+            }
+        };
+        fetchData();
+    }, []);
+
     return (
         <Container>
             <Content>
                 <Info>
                     <Avatar>
-                        <img src={DefaultAvatar} alt="default avatar" />
+                        <img src={photo} alt="avatar" />
                     </Avatar>
                 </Info>
 
                 <Section>
                     <Description>Настройки</Description>
 
-                    <SectionElement>
+                    <SectionElement onClick={() => navigate('/options/account')}>
                         Аккаунт
                         <img src={Arrow} alt="" />
                     </SectionElement>

@@ -1,14 +1,11 @@
+export type Room = {
+    name: string;
+};
 
-export * from './room.ts';
 export type User = {
-    deviceToken: string;
     email: string;
     nickname: string;
     password: string;
-    registrationToken: string;
-    surname: string;
-    telephoneNumber: string;
-    username: string;
 };
 
 export type Tag = {

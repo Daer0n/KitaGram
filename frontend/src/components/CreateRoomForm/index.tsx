@@ -7,6 +7,7 @@ import { API } from '@api';
 import moment from 'moment';
 import { Tags } from '@components/Tags';
 import { Photos } from '@components/Photos';
+import { Categories } from '@components/Categories';
 import {
     Block,
     Container,
@@ -16,7 +17,6 @@ import {
     Title,
     NextButton,
     BackButton,
-    Categories,
 } from './styled';
 
 export const CreateRoomForm = () => {
@@ -29,6 +29,7 @@ export const CreateRoomForm = () => {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [location, setLocation] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     const handleChangeRoomName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRoomName(event.target.value);
@@ -135,13 +136,11 @@ export const CreateRoomForm = () => {
                 {step === 5 && (
                     <Block>
                         <Description>Выберите категорию</Description>
-                        <Categories>
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {categories.map((category: Category) => (
-                                    <li key={category.id}>{category.name}</li>
-                                ))}
-                            </ul>
-                        </Categories>
+                        <Categories
+                            categories={categories}
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
+                        />
                         <NextButton onClick={nextStep}>Далее</NextButton>
                     </Block>
                 )}
