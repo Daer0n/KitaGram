@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-export const SearchInputContainer = styled.div`
+export const SearchFilterInputContainer = styled.div`
+  display: flex;
+  gap: 10px;
   padding: 16px 16px 0 16px;
 `;
 
@@ -14,3 +16,17 @@ export const SearchInput = styled.input`
   border-radius: 5px;
 `;
 
+export const CategoriesContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const Category = styled.div`
+  border-radius: 8px;
+  padding: 5px;
+  color: #fff;
+  font-size: 20px;
+  background-color: #ff8585;
+  cursor: pointer;
+`;

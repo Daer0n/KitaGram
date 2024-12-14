@@ -1,3 +1,5 @@
+
+export * from './room.ts';
 export type User = {
     deviceToken: string;
     email: string;
