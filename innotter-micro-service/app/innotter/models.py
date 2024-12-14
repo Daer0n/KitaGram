@@ -20,7 +20,6 @@ class Room(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
 
-
 class Participant(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     user_id = models.UUIDField(null=False)

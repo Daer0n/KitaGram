@@ -1,3 +1,5 @@
+from uuid import UUID
+from django.db.models import Q
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,15 +20,23 @@ from innotter.serializers import (
 from innotter.utils import get_user_info
 
 
-# REMAKE (get by recommendations)
+# TODO: add recommendations
 class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [JWTAuthentication]
-    serializer_class = ParticipantSerializer
+    serializer_class = RoomSerializer
 
     def get_queryset(self):
-        user = get_user_info(self.request)
-        following_pages = Participant.objects.filter(user_id=user["id"])
-        return following_pages
+        queryset = Room.objects.all()
+
+        tags = self.request.query_params.get("tags")
+        name = self.request.query_params.get("name")
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        if tags:
+            tag_ids = [int(tag) for tag in tags.split(",") if tag.isdigit()]
+            queryset = queryset.filter(tags__id__in=tag_ids).distinct()
+
+        return queryset
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -82,6 +92,23 @@ class RoomViewSet(viewsets.ModelViewSet):
         participants = Participant.objects.filter(room=room)
         serializer = ParticipantSerializer(participants, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def joined(self, request, pk=None):
+        user = get_user_info(self.request)
+        user_id = user["id"]
+        room_ids = Participant.objects.filter(user_id=user_id).values_list("room")
+        rooms = Room.objects.filter(id__in=room_ids)
+        serializer = RoomSerializer(rooms, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def my(self, request, pk=None):
+        user = get_user_info(self.request)
+        user_id = UUID(user["id"])
+        rooms = Room.objects.filter(user_id=user_id)
+        serializer = RoomSerializer(rooms, many=True)
+        return Response(serializer.data)
 
 
 class TagViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -90,19 +117,3 @@ class TagViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Generi
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-
-# TODO: add ilike + multiple tags 
-class TagsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permission_classes = [JWTAuthentication]
-
-    serializer_class = RoomSerializer
-    pagination_class = CustomPageNumberPagination
-
-    def get_queryset(self):
-        queryset = Room.objects.all()
-
-        filter_by_name = self.request.query_params.get("filter_by_name")
-        if filter_by_name:
-            queryset = queryset.filter(tags__name=filter_by_name)
-
-        return queryset
