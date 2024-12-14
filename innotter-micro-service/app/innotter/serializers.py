@@ -1,45 +1,33 @@
 from rest_framework import serializers
 
-from innotter.models import Follower, Page, Post, Tag
+from innotter.models import Participant, Room, Tag
 
 
-class PageSerializer(serializers.ModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True, required=False
     )
 
     class Meta:
-        model = Page
+        model = Room
         fields = [
             "id",
             "name",
             "description",
+            "image_url",
             "tags",
-            "followers",
+            "participants",
+            "participants_limit",
             "created_at",
             "modified_at",
         ]
 
-
-class PostSerializer(serializers.ModelSerializer):
+class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
-        fields = [
-            "id",
-            "page",
-            "content",
-            "reply_to_post_id",
-            "likes",
-            "created_at",
-            "modified_at",
-        ]
-
-
-class FollowerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Follower
+        model = Participant
         fields = [
             "user_id",
+            "room"
         ]
 
 

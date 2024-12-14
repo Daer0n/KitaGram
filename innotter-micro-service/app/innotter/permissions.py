@@ -6,7 +6,7 @@ import requests
 from jwt.exceptions import InvalidTokenError
 from rest_framework.permissions import BasePermission
 
-from innotter.models import Page, Post
+from innotter.models import Room
 from innotter.utils import get_user_info
 
 
@@ -14,17 +14,9 @@ class JWTAuthentication(BasePermission):
     def has_access(self, request, view):
         return True
 
-    def get_page(self, request, view):
-        view_type = view.__class__.__name__
-        if view_type == "PageViewSet":
-            page_id = view.kwargs.get("pk")
-            return Page.objects.filter(id=page_id).first()
-        elif view_type == "PostViewSet":
-            post_id = view.kwargs.get("pk")
-            post = Post.objects.filter(id=post_id).first()
-            if post:
-                return post.page
-        return None
+    def get_room(self, request, view):
+        room_id = view.kwargs.get("pk")
+        return Room.objects.filter(id=room_id).first()
 
     def has_permission(self, request, view):
         try:
@@ -38,7 +30,7 @@ class JWTAuthentication(BasePermission):
 
 class IsAdmin(JWTAuthentication):
     def has_access(self, request, view):
-        page = self.get_page(request, view)
+        page = self.get_room(request, view)
         if not page:
             return False
         user = get_user_info(request)
@@ -47,7 +39,7 @@ class IsAdmin(JWTAuthentication):
 
 class IsModeratorOfPageOwnerGroup(JWTAuthentication):
     def has_access(self, request, view):
-        page = self.get_page(request, view)
+        page = self.get_room(request, view)
         bearer = request.headers.get("Authorization", "")
         if not page:
             return False
@@ -57,7 +49,7 @@ class IsModeratorOfPageOwnerGroup(JWTAuthentication):
 
 class IsPageOwner(JWTAuthentication):
     def has_access(self, request, view):
-        page = self.get_page(request, view)
+        page = self.get_room(request, view)
         if not page:
             return False
         user = get_user_info(request)
