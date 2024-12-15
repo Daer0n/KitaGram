@@ -44,7 +44,7 @@ const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ roo
             <div>{room.time}</div>
           </HeaderDateTime>
         </HeaderContainer>
-        <p><strong>Participants:</strong>{room.participants}/{room.participants_limit}</p>
+        <p><strong>Participants:</strong>{room.participants}/{room.participantsLimit}</p>
       </ContentContainer>
     </Modal>
   );

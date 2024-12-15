@@ -10,15 +10,19 @@ export const RoomsAPI = {
         return Cookies.get('access_token');
     },
 
-    // TODO: add optional tags and
-    async rooms() {
+    async rooms(params?: { name?: string; tags?: number[] }) {
         const authToken = this.getAuthToken();
 
         if (!authToken) {
             throw new Error('Authorization token is missing.');
         }
 
-        const roomsRequest = {
+        const searchParams: Record<string, string> = {};
+        if (params?.name) searchParams.name = params.name;
+        if (params?.tags) searchParams.tags = params.tags.join(','); 
+        const url = `${this.baseUrl}/feed/?${new URLSearchParams(searchParams).toString()}`;
+
+        const roomsRequest: RequestInit = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,15 +30,20 @@ export const RoomsAPI = {
             },
         };
 
-        return fetch(`${this.baseUrl}/rooms/`, roomsRequest)
-            .then((response) => response.json())
+        return fetch(url, roomsRequest)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Error fetching rooms: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .catch((error) => {
                 console.error('Error during fetching rooms:', error);
                 throw error;
             });
     },
 
-    async getTags() {
+    async tags() {
         const accessToken = this.getAuthToken();
         const getTagsRequest = {
             method: 'GET',
@@ -47,12 +56,13 @@ export const RoomsAPI = {
             .then((response) => response.json())
             .catch((error) => {
                 console.error('Error during get tags', error);
-                throw error; // Обработка ошибки
+                throw error; 
             });
     },
 };
 
 
+// TODO: remove
 export const API = {
     baseUrl: 'http://158.220.107.252/',
 
