@@ -26,7 +26,7 @@ export const AuthForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await UserAPI.signIn({ nickname, password });
-            
+
             Cookies.set('access_token', data.access_token, { expires: 7 });
             Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
 
@@ -74,7 +74,7 @@ export const AuthForm = () => {
                 <Button onClick={fetchData}>Войти</Button>
 
                 <RegistrationContainer>
-                    Нет аккаунта?{' '}
+                    Нет аккаунта?
                     <Registration onClick={() => navigate('/registration')}>
                         Регистрация
                     </Registration>
