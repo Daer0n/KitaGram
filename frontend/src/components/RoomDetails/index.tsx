@@ -1,6 +1,7 @@
 // RoomsList.tsx
-import React, { useState, useEffect } from 'react';
-import { 
+import React from 'react';
+import { RoomsAPI } from '@api';
+import {
   ImageContainer,
   RoomImage,
   ContentContainer,
@@ -10,7 +11,7 @@ import {
   HeaderTitle
 } from './styled';
 // import { API } from '@api';
-import { Modal } from 'antd';
+import { Modal, notification } from 'antd';
 
 
 interface Room {
@@ -28,10 +29,29 @@ interface Room {
 const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ room, onClose }) => {
   if (!room) return null;
 
+  const handleJoinRoom = async () => {
+    try {
+      await RoomsAPI.joinIntoRoom(room.id);
+
+      notification.success({
+        message: `Successfully joined into the room: ${room.name}`,
+        description: "",
+      });
+
+    } catch (err) {
+      console.log(err);
+      notification.error({
+        message: "Error during fetching",
+        description: "",
+      });
+    }
+
+  };
+
   return (
     <Modal open={true} onCancel={onClose} footer={null} styles={{ content: { padding: 0, borderRadius: 20 } }} closable={false}>
       <ImageContainer>
-        <RoomImage src={room.imageUrl} alt={room.name}/>
+        <RoomImage src={room.imageUrl} alt={room.name} />
       </ImageContainer>
       <ContentContainer>
         <HeaderContainer>
@@ -45,6 +65,7 @@ const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ roo
           </HeaderDateTime>
         </HeaderContainer>
         <p><strong>Participants:</strong>{room.participants}/{room.participantsLimit}</p>
+        <button onClick={handleJoinRoom}>Вступить</button>
       </ContentContainer>
     </Modal>
   );

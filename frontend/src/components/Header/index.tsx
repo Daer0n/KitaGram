@@ -7,30 +7,31 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Icon, IconContainer, LogoContainer } from './styled';
 
 export const Header = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <Container>
-            <LogoContainer onClick={() => navigate('/home')}>
-                <img src={Logo} alt="Home" />
-            </LogoContainer>
+  return (
+    <Container>
+      <LogoContainer onClick={() => navigate('/home')}>
+        <img src={Logo} alt="Home" />
+      </LogoContainer>
 
-            <IconContainer>
-                <Icon onClick={() => navigate('/home')}>
-                    <img src={Home} alt="Home" />
-                </Icon>
+      <IconContainer>
+        <Icon onClick={() => navigate('/home')}>
+          <img src={Home} alt="Home" />
+        </Icon>
 
-                <Icon onClick={() => navigate('/create-room')}>
-                    <img src={NewRoom} alt="NewRoom" />
-                </Icon>
-                <Icon>
-                    <img src={Rooms} alt="Rooms" />
-                </Icon>
+        <Icon onClick={() => navigate('/create-room')}>
+          <img src={NewRoom} alt="NewRoom" />
+        </Icon>
 
-                <Icon onClick={() => navigate('/options')}>
-                    <img src={Options} alt="Options" />
-                </Icon>
-            </IconContainer>
-        </Container>
-    );
+        <Icon onClick={() => navigate('/rooms/my')}>
+          <img src={Rooms} alt="Home" />
+        </Icon>
+
+        <Icon onClick={() => navigate('/options')}>
+          <img src={Options} alt="Options" />
+        </Icon>
+      </IconContainer>
+    </Container>
+  );
 };
