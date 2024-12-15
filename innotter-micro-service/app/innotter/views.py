@@ -17,6 +17,7 @@ from innotter.permissions import (
 from innotter.serializers import (
     ParticipantSerializer,
     RoomSerializer,
+    RoomCreateSerializer,
     TagSerializer,
 )
 from innotter.utils import get_user_info
@@ -53,8 +54,12 @@ class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
-    serializer_class = RoomSerializer
     pagination_class = CustomPageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']: 
+            return RoomCreateSerializer
+        return RoomSerializer 
 
     def get_permissions(self):
         permission_classes = {
