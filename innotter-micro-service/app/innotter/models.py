@@ -14,6 +14,7 @@ class Room(models.Model):
     image_url = models.URLField(default=None, blank=True, null=True)
     category =  models.CharField(max_length=100, default=None, blank=True, null=True)
     tags = models.ManyToManyField(Tag)
+    location = models.CharField(max_length=255, default=None, blank=True, null=True)
     datetime = models.DateTimeField(null=False)
     participants = models.PositiveIntegerField(default=0)
     participants_limit = models.PositiveIntegerField()
