@@ -28,6 +28,7 @@ interface Room {
   name: string;
   description: string,
   imageUrl: string,
+  category: string,
   tags: number[],
   date: string;
   time: string;
@@ -50,7 +51,7 @@ const RoomList: React.FC = () => {
       setLoading(true);
       try {
         const response = await RoomsAPI.rooms();
-        const data: Room[] = response.results.map((room: any) => {
+        const data: Room[] = response.map((room: any) => {
           const [date, timeWithZ] = room.datetime.split("T");
           const time = timeWithZ.replace("Z", "").slice(0, 5);
         
@@ -59,6 +60,7 @@ const RoomList: React.FC = () => {
             name: room.name,
             description: room.description,
             imageUrl: room.image_url,
+            category: room.category,
             tags: room.tags,
             date: date,
             time: time,
@@ -85,7 +87,7 @@ const RoomList: React.FC = () => {
     <div>
       <Search setRooms={setRooms} setError={setError} setLoading={setLoading} />
       <RoomsContainer>
-        {loading && <p>Loading...</p>}
+        {/* {loading && <p>Loading...</p>} */}
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         {rooms.map((room) => (
@@ -96,7 +98,7 @@ const RoomList: React.FC = () => {
             <RoomsDataContainer>
 
               <RoomGeneralData>
-                <RoomType>Футбол</RoomType>
+                <RoomType>{room.category}</RoomType>
                 <RoomTitle>{room.name}</RoomTitle>
                 <RoomUsers>
                   <div>{room.participants}/{room.participantsLimit}</div>
