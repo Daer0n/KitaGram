@@ -89,6 +89,16 @@ DATABASES = {
     },
 }
 
+AWS = {
+    "default": {
+        "AWS_URL": os.environ.get("AWS_URL"),
+        "AWS_ACCESS_KEY": os.environ.get("AWS_ACCESS_KEY"),
+        "AWS_SECRET_ACCESS_KEY": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+        "AWS_REGION_NAME": os.environ.get("AWS_REGION_NAME"),
+        "BUCKET": os.environ.get("S3_BUCKET"),
+    },
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

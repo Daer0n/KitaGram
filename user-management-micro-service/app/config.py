@@ -39,7 +39,7 @@ class AuthSettings(BaseModel):
     JWT_REFRESH_SECRET_KEY: str
     ALGORITHM: str
 
-    access_token_expire_minutes: int = 1
+    access_token_expire_minutes: int = 60
     refresh_token_expire_minutes: int = 60 * 24 * 7
 
 

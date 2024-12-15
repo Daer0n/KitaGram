@@ -2,7 +2,7 @@ from uuid import UUID
 
 import pytest
 
-from innotter.models import Page
+from innotter.models import Room
 from innotter.permissions import (
     IsAdmin,
     IsModeratorOfPageOwnerGroup,
