@@ -148,7 +148,6 @@ export const UserAPI = {
                 username: newUsername,
             }),
         };
-        console.log(updateUserRequest);
         try {
             await fetch(`${this.baseUrl}user/me`, updateUserRequest);
         } catch (error) {

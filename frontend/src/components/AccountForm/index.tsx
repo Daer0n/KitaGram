@@ -37,7 +37,6 @@ export const AccountForm = () => {
                 if (data.img_path !== 'https://example.com') {
                     setPhoto(data.img_path);
                 }
-                //console.log(data);
                 setEmail(data.email);
                 setUsername(data.username);
             } catch (error) {

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { MemberSelector } from '@components/MemberSelector';
 import { DateTimeSelector } from '@components/DateTimeSelector';
 import BackIcon from '@assets/images/BackIcon.svg';
-import { Tag, Category } from '@types';
-import { API } from '@api';
-import moment from 'moment';
+import { Room, Tag } from '@types';
+import { notification } from 'antd';
+import { RoomsAPI } from '@api';
 import { Tags } from '@components/Tags';
 import { Photos } from '@components/Photos';
 import { Categories } from '@components/Categories';
@@ -17,19 +17,29 @@ import {
     Title,
     NextButton,
     BackButton,
+    Textarea,
 } from './styled';
 
 export const CreateRoomForm = () => {
     const [step, setStep] = useState(0);
     const [roomName, setRoomName] = useState('');
-    const [photos, setPhotos] = useState<string[]>([]);
+    const [photo, setPhoto] = useState<string>('');
     const [members, setMembers] = useState(1);
-    const [date, setDate] = useState<moment.Moment | null>(null);
+    const [date, setDate] = useState<string>('');
     const [tags, setTags] = useState<Tag[]>([]);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [location, setLocation] = useState('');
-    const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await RoomsAPI.tags();
+            setTags(data);
+        };
+
+        fetchData();
+    }, []);
 
     const handleChangeRoomName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRoomName(event.target.value);
@@ -37,6 +47,10 @@ export const CreateRoomForm = () => {
 
     const handleChangeLocation = (event: React.ChangeEvent<HTMLInputElement>) => {
         setLocation(event.target.value);
+    };
+
+    const handleChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setDescription(event.target.value);
     };
 
     const nextStep = () => {
@@ -47,36 +61,32 @@ export const CreateRoomForm = () => {
         setStep((prevStep) => Math.max(prevStep - 1, 0));
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await API.getTags();
-            setTags(data);
-            console.log(data);
+    const handleCreateRoom = async () => {
+        const room: Room = {
+            name: roomName,
+            description: description,
+            image_url: photo,
+            category: selectedCategory,
+            tags: selectedTags,
+            datetime: date,
+            location: location,
+            participants_limit: members,
         };
-
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await API.getCategories();
-            setCategories(data);
-            console.log(data);
-        };
-
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await API.getOpenRooms();
-            console.log(data);
-        };
-
-        fetchData();
-    }, []);
-
-    console.log(date);
+        try {
+            const data = await RoomsAPI.createRoom(room);
+            notification.success({
+                message: 'Комната успешно создана!',
+                description: 'Вы можете теперь управлять этой комнатой.',
+            });
+            console.log('Response:', data);
+        } catch (error) {
+            notification.error({
+                message: 'Ошибка при создании комнаты',
+                description: 'Пожалуйста, попробуйте еще раз.',
+            });
+            console.error('Error creating room:', error);
+        }
+    };
 
     return (
         <Container>
@@ -100,6 +110,18 @@ export const CreateRoomForm = () => {
 
                 {step === 1 && (
                     <Block>
+                        <Description>Введите описание комнаты</Description>
+                        <Textarea
+                            placeholder="Введите описание"
+                            value={description}
+                            onChange={handleChangeDescription}
+                        />
+                        <NextButton onClick={nextStep}>Далее</NextButton>
+                    </Block>
+                )}
+
+                {step === 2 && (
+                    <Block>
                         <Description>Выберите локацию</Description>
                         <Input
                             placeholder="Введите локацию"
@@ -110,7 +132,7 @@ export const CreateRoomForm = () => {
                     </Block>
                 )}
 
-                {step === 2 && (
+                {step === 3 && (
                     <Block>
                         <Description>Установите максимально количество приглашенных</Description>
                         <MemberSelector members={members} onChange={setMembers} />
@@ -118,33 +140,32 @@ export const CreateRoomForm = () => {
                     </Block>
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                     <Block>
-                        <Description>Добавьте фотографии</Description>
-                        <Photos photos={photos} setPhotos={setPhotos} />
+                        <Description>Добавьте фотографию</Description>
+                        <Photos setPhoto={setPhoto} />
                         <NextButton onClick={nextStep}>Далее</NextButton>
                     </Block>
                 )}
 
-                {step === 4 && (
+                {step === 5 && (
                     <Block>
                         <Description>Выберите дату и время</Description>
                         <DateTimeSelector dateTime={date} setDateTime={setDate} />
                         <NextButton onClick={nextStep}>Готово</NextButton>
                     </Block>
                 )}
-                {step === 5 && (
+                {step === 6 && (
                     <Block>
                         <Description>Выберите категорию</Description>
                         <Categories
-                            categories={categories}
                             selectedCategory={selectedCategory}
                             setSelectedCategory={setSelectedCategory}
                         />
                         <NextButton onClick={nextStep}>Далее</NextButton>
                     </Block>
                 )}
-                {step === 6 && (
+                {step === 7 && (
                     <Block>
                         <Description>Выберите теги</Description>
                         <Tags
@@ -152,7 +173,7 @@ export const CreateRoomForm = () => {
                             selectedTags={selectedTags}
                             setSelectedTags={setSelectedTags}
                         />
-                        <NextButton onClick={nextStep}>Далее</NextButton>
+                        <NextButton onClick={handleCreateRoom}>Создать комнату</NextButton>
                     </Block>
                 )}
             </Content>

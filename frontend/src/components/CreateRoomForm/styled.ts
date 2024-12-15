@@ -61,6 +61,16 @@ export const Input = styled.input`
     border: 1.5px solid rgba(79, 79, 79, 0.7);
     background: rgba(244, 244, 244, 0.3);
     padding: 10px;
+
+    &:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    }
+
+    &::placeholder {
+        color: #aaa;
+        opacity: 1;
+    }
 `;
 
 export const NextButton = styled.button`
@@ -104,4 +114,27 @@ export const Categories = styled.div`
     align-items: center;
     flex-direction: column;
     gap: 20px;
+`;
+
+export const Textarea = styled.textarea`
+    width: 45%;
+    height: 120px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 20px;
+    line-height: 1.5;
+    resize: vertical;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    &:focus {
+        border-color: #4a90e2;
+        outline: none;
+        box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    }
+
+    &::placeholder {
+        color: #aaa;
+        opacity: 1;
+    }
 `;

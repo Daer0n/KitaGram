@@ -3,15 +3,15 @@ import { Container, Element } from './styled';
 
 interface TagsProps {
     tags: Tag[];
-    selectedTags: string[];
-    setSelectedTags: (tagsId: string[]) => void;
+    selectedTags: number[];
+    setSelectedTags: (tagsId: number[]) => void;
 }
 
 export const Tags: React.FC<TagsProps> = ({ tags, selectedTags, setSelectedTags }) => {
-    const toggleTag = (tagID: string) => {
-        setSelectedTags((prevSelectedTags: string[]) => {
+    const toggleTag = (tagID: number) => {
+        setSelectedTags((prevSelectedTags: number[]) => {
             if (prevSelectedTags.includes(tagID)) {
-                return prevSelectedTags.filter((id: string) => id !== tagID);
+                return prevSelectedTags.filter((id: number) => id !== tagID);
             } else {
                 return [...prevSelectedTags, tagID];
             }
@@ -22,11 +22,11 @@ export const Tags: React.FC<TagsProps> = ({ tags, selectedTags, setSelectedTags 
         <Container>
             {tags.map((tag: Tag) => (
                 <Element
-                    key={tag.ID}
-                    onClick={() => toggleTag(tag.ID)}
-                    isSelected={selectedTags.includes(tag.ID)}
+                    key={tag.id}
+                    onClick={() => toggleTag(tag.id)}
+                    isSelected={selectedTags.includes(tag.id)}
                 >
-                    {tag.Name}
+                    {tag.name}
                 </Element>
             ))}
         </Container>
