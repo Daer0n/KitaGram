@@ -1,6 +1,6 @@
 from django.db import models
 
-from innotter.managers import ParticipantManager
+from innotter.managers import ParticipantManager, PriorityManager
 
 
 class Tag(models.Model):
@@ -12,7 +12,9 @@ class Room(models.Model):
     name = models.CharField(max_length=50, null=False)
     description = models.CharField(max_length=100, default=None, blank=True, null=True)
     image_url = models.URLField(default=None, blank=True, null=True)
+    category =  models.CharField(max_length=100, default=None, blank=True, null=True)
     tags = models.ManyToManyField(Tag)
+    location = models.CharField(max_length=255, default=None, blank=True, null=True)
     datetime = models.DateTimeField(null=False)
     participants = models.PositiveIntegerField(default=0)
     participants_limit = models.PositiveIntegerField()
@@ -26,4 +28,11 @@ class Participant(models.Model):
 
     objects = ParticipantManager()
 
+
+class Priority(models.Model):
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    user_id = models.UUIDField(null=False)
+    count = models.PositiveIntegerField(default=1)
+
+    objects = PriorityManager()
 

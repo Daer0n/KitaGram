@@ -22,3 +22,15 @@ class ParticipantManager(models.Manager):
         except ObjectDoesNotExist:
             result = False
         return result
+
+
+
+class PriorityManager(models.Manager):
+    def increase(self, user_id, room):
+        tags = room.tags.all()
+        for tag in tags:
+            instace, created = self.get_or_create(user_id=user_id, tag=tag)
+            if not created:
+                instace.counter += 1
+                instace.save()
+        

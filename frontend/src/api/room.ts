@@ -2,6 +2,57 @@ import { User } from '@types';
 import { Room } from '@types';
 import Cookies from 'js-cookie';
 
+
+export const RoomsAPI = {
+    baseUrl: 'http://localhost:8001',
+
+    getAuthToken() {
+        return Cookies.get('access_token');
+    },
+
+    // TODO: add optional tags and
+    async rooms() {
+        const authToken = this.getAuthToken();
+
+        if (!authToken) {
+            throw new Error('Authorization token is missing.');
+        }
+
+        const roomsRequest = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+        };
+
+        return fetch(`${this.baseUrl}/rooms/`, roomsRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during fetching rooms:', error);
+                throw error;
+            });
+    },
+
+    async getTags() {
+        const accessToken = this.getAuthToken();
+        const getTagsRequest = {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+
+        return fetch(`${this.baseUrl}/tags/`, getTagsRequest)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error('Error during get tags', error);
+                throw error; // Обработка ошибки
+            });
+    },
+};
+
+
 export const API = {
     baseUrl: 'http://158.220.107.252/',
 

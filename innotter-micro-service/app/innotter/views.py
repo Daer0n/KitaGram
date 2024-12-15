@@ -1,14 +1,12 @@
+import boto3
 from uuid import UUID
-from django.db.models import Q
+from django.conf import settings
+from django.db.models import Avg, F
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-import boto3
-
-from django.conf import settings
-
-from innotter.models import Participant, Room, Tag
+from innotter.models import Participant, Room, Tag, Priority
 from innotter.paginations import CustomPageNumberPagination
 from innotter.permissions import (
     IsAdmin,
@@ -19,17 +17,19 @@ from innotter.permissions import (
 from innotter.serializers import (
     ParticipantSerializer,
     RoomSerializer,
+    RoomCreateSerializer,
     TagSerializer,
 )
 from innotter.utils import get_user_info
 
 
-# TODO: add recommendations
 class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [JWTAuthentication]
     serializer_class = RoomSerializer
 
     def get_queryset(self):
+        user = get_user_info(self.request)
+        user_id = user["id"]
         queryset = Room.objects.all()
 
         tags = self.request.query_params.get("tags")
@@ -40,13 +40,26 @@ class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             tag_ids = [int(tag) for tag in tags.split(",") if tag.isdigit()]
             queryset = queryset.filter(tags__id__in=tag_ids).distinct()
 
+        queryset = (
+            queryset.annotate(
+                priority_score=Avg(
+                    F('tags__priority__count'),
+                    filter=F('tags__priority__user_id') == user_id
+                )
+            )
+            .order_by('priority_score', '-created_at')
+        )
         return queryset
 
 
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
-    serializer_class = RoomSerializer
     pagination_class = CustomPageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']: 
+            return RoomCreateSerializer
+        return RoomSerializer 
 
     def get_permissions(self):
         permission_classes = {
@@ -72,11 +85,12 @@ class RoomViewSet(viewsets.ModelViewSet):
         user_id = get_user_info(self.request).get("id")
         response = None
         if Participant.objects.join(room, user_id):
+            Priority.objects.increase(user_id, room)
             response = Response(
-                {"message": f"You are now following page {room.id}."})
+                {"message": f"You have now joined the room {room.id}."})
         else:
             response = Response(
-                {"message": f"You are already following page {room.id}."}
+                {"message": f"You are already in the room {room.id}."}
             )
         return response
 
@@ -87,10 +101,10 @@ class RoomViewSet(viewsets.ModelViewSet):
         response = None
         if Participant.objects.leave(room, user_id):
             response = Response(
-                {"message": f"You no longer following page {room.id}."})
+                {"message": f"You have now left the room {room.id}."})
         else:
             response = Response(
-                {"message": f"You are not following page {room.id}."})
+                {"message": "You are not in the room {room.id}."})
         return response
 
     @action(detail=True, methods=["get"])

@@ -18,19 +18,21 @@ import {
 } from './styled';
 import { Search } from "@components/SearchRooms";
 import { RoomDetails } from '@components/RoomDetails';
-import { API } from '@api';
-import { notification, Modal } from 'antd';
+import { RoomsAPI } from '@api';
+import { notification } from 'antd';
 
 
 
 interface Room {
   id: number;
-  title: string;
-  category: string,
+  name: string;
+  description: string,
+  imageUrl: string,
+  tags: number[],
   date: string;
   time: string;
-  numberOfUsers: string;
-  imgUrl: string;
+  participants: number,
+  participantsLimit: number;
 }
 
 
@@ -46,16 +48,24 @@ const RoomList: React.FC = () => {
     
     const fetchOpenRooms = async () => {
       setLoading(true);
-        const data: Room[] = [
-          { id: 0, title: "Бар ‘Zauglom’", category: "Бар", date: "9 октября", time: "20:00", numberOfUsers: "1/10", imgUrl: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?t=st=1732960777~exp=1732964377~hmac=3f2ff788ffe0657141d44602f68e7b8cc8f508b34cb90aa3315c69673cc6ff3d&w=1380" },
-          { id: 1, title: "Бар ‘Суета’", category: "Бар", date: "10 октября", time: "23:00", numberOfUsers: "1/10", imgUrl: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?t=st=1732960777~exp=1732964377~hmac=3f2ff788ffe0657141d44602f68e7b8cc8f508b34cb90aa3315c69673cc6ff3d&w=1380" },
-          { id: 2, title: "Финал ЛЧ", category: "Футбол", date: "10 октября", time: "23:00", numberOfUsers: "1/10", imgUrl: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?t=st=1732960777~exp=1732964377~hmac=3f2ff788ffe0657141d44602f68e7b8cc8f508b34cb90aa3315c69673cc6ff3d&w=1380"  },
-          { id: 3, title: "Бар ‘Суета’", category: "Бар", date: "10 октября", time: "23:00", numberOfUsers: "1/10", imgUrl: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?t=st=1732960777~exp=1732964377~hmac=3f2ff788ffe0657141d44602f68e7b8cc8f508b34cb90aa3315c69673cc6ff3d&w=1380"  },
-          { id: 4, title: "Бар ‘Пивной бункер Со2’", category: "Бар", date: "15 октября", time: "19:30", numberOfUsers: "1/10", imgUrl: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?t=st=1732960777~exp=1732964377~hmac=3f2ff788ffe0657141d44602f68e7b8cc8f508b34cb90aa3315c69673cc6ff3d&w=1380"  },
-        ];
       try {
-        // const test: Room[] = await API.rooms();
-        // console.log(test);
+        const response = await RoomsAPI.rooms();
+        const data: Room[] = response.results.map((room: any) => {
+          const [date, timeWithZ] = room.datetime.split("T");
+          const time = timeWithZ.replace("Z", "").slice(0, 5);
+        
+          return {
+            id: room.id,
+            name: room.name,
+            description: room.description,
+            imageUrl: room.image_url,
+            tags: room.tags,
+            date: date,
+            time: time,
+            participants: room.participants,
+            participantsLimit: room.participants_limit,
+          };
+        });
         setRooms(data);
       } catch (err) {
           notification.error({
@@ -81,15 +91,15 @@ const RoomList: React.FC = () => {
         {rooms.map((room) => (
           <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
             <RoomsImgContainer>
-              <RoomsImg src={room.imgUrl} />
+              <RoomsImg src={room.imageUrl} />
             </RoomsImgContainer>
             <RoomsDataContainer>
 
               <RoomGeneralData>
-                <RoomType>{room.category}</RoomType>
-                <RoomTitle>{room.title}</RoomTitle>
+                <RoomType>Футбол</RoomType>
+                <RoomTitle>{room.name}</RoomTitle>
                 <RoomUsers>
-                  <div>{room.numberOfUsers}</div>
+                  <div>{room.participants}/{room.participantsLimit}</div>
                   <RoomUsersImg src={DefaultAvatar} alt="default avatar"/>
                 </RoomUsers>
               </RoomGeneralData>

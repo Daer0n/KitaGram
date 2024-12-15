@@ -7,7 +7,7 @@ import {
 } from './styled';
 
 import { notification } from 'antd';
-import { API } from '@api';
+// import { API } from '@api';
 
 
 interface Room {
