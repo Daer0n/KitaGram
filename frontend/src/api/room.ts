@@ -160,4 +160,28 @@ export const RoomsAPI = {
         throw error;
       });
   },
+
+  async leaveRoom(roomID: number) {
+    const authToken = this.getAuthToken();
+
+    if (!authToken) {
+      throw new Error('Authorization token is missing.');
+    }
+
+    const request = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    return fetch(`${this.baseUrl}/rooms/${roomID}/leave/`, request)
+      .then((response) => response.json())
+      .catch((error) => {
+        console.log(error)
+        console.error('Error during joining into the room:', error);
+        throw error;
+      });
+  },
 };

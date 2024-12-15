@@ -26,7 +26,7 @@ interface Room {
   participantsLimit: number;
 }
 
-const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ room, onClose }) => {
+const RoomDetails: React.FC<{ room: Room | null; onClose: () => void; isLeaveButton: boolean }> = ({ room, onClose, isLeaveButton }) => {
   if (!room) return null;
 
   const handleJoinRoom = async () => {
@@ -45,7 +45,24 @@ const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ roo
         description: "",
       });
     }
+  };
 
+  const handleLeaveRoom = async () => {
+    try {
+      await RoomsAPI.leaveRoom(room.id);
+
+      notification.success({
+        message: `Successfully joined into the room: ${room.name}`,
+        description: "",
+      });
+
+    } catch (err) {
+      console.log(err);
+      notification.error({
+        message: "Error during fetching",
+        description: "",
+      });
+    }
   };
 
   return (
@@ -65,7 +82,7 @@ const RoomDetails: React.FC<{ room: Room | null; onClose: () => void }> = ({ roo
           </HeaderDateTime>
         </HeaderContainer>
         <p><strong>Participants:</strong>{room.participants}/{room.participantsLimit}</p>
-        <button onClick={handleJoinRoom}>Вступить</button>
+        {isLeaveButton ? (<button onClick={handleLeaveRoom}>Выйти</button>) : (<button onClick={handleJoinRoom}>Вступить</button>)}
       </ContentContainer>
     </Modal>
   );

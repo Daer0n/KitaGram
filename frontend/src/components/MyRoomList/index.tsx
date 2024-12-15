@@ -114,7 +114,7 @@ const MyRoomList: React.FC = () => {
         ))}
       </RoomsContainer>
       {selectedRoom && (
-        <RoomDetails room={selectedRoom} onClose={() => setSelectedRoom(null)} />
+        <RoomDetails room={selectedRoom} onClose={() => setSelectedRoom(null)} isLeaveButton={true} />
       )}
     </div>
 
