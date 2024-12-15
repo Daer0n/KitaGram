@@ -56,7 +56,7 @@ export const Input = styled.input`
     width: 45%;
     outline: none;
     border: none;
-    font-size: 30px;
+    font-size: 20px;
     border-radius: 5px;
     border: 1.5px solid rgba(79, 79, 79, 0.7);
     background: rgba(244, 244, 244, 0.3);

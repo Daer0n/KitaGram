@@ -6,6 +6,7 @@ import { notification } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BackIcon from '@assets/images/BackIcon.svg';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { useFetching } from '@hooks';
 import {
     Container,
     Content,
@@ -18,6 +19,7 @@ import {
     AvatarWrapper,
     BackButton,
 } from './styled';
+import { Loader } from '@components/Loader';
 
 export const AccountForm = () => {
     const navigate = useNavigate();
@@ -29,20 +31,20 @@ export const AccountForm = () => {
     const [newValue, setNewValue] = useState('');
     const [oldPassword, setOldPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [fetchData, isLoading] = useFetching(async () => {
+        try {
+            const data = await UserAPI.getInfo();
+            if (data.img_path !== 'https://example.com') {
+                setPhoto(data.img_path);
+            }
+            setEmail(data.email);
+            setUsername(data.username);
+        } catch (error) {
+            console.error('Ошибка при получении данных:', error);
+        }
+    });
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await UserAPI.getInfo();
-                if (data.img_path !== 'https://example.com') {
-                    setPhoto(data.img_path);
-                }
-                setEmail(data.email);
-                setUsername(data.username);
-            } catch (error) {
-                console.error('Ошибка при получении данных:', error);
-            }
-        };
         fetchData();
     }, []);
 
@@ -132,39 +134,43 @@ export const AccountForm = () => {
 
     return (
         <Container>
-            <Content>
-                <BackButton onClick={handleNavigateBack}>
-                    <img src={BackIcon} alt="Назад" />
-                </BackButton>
+            {isLoading ? (
+                <Loader />
+            ) : (
+                <Content>
+                    <BackButton onClick={handleNavigateBack}>
+                        <img src={BackIcon} alt="Назад" />
+                    </BackButton>
 
-                <Info>
-                    <AvatarWrapper onClick={handleAddPhoto}>
-                        <Avatar>
-                            <img src={photo} alt="avatar" />
-                        </Avatar>
+                    <Info>
+                        <AvatarWrapper onClick={handleAddPhoto}>
+                            <Avatar>
+                                <img src={photo} alt="avatar" />
+                            </Avatar>
 
-                        <div className="edit-icon">
-                            <FontAwesomeIcon icon={faPen} />
-                        </div>
-                    </AvatarWrapper>
-                </Info>
+                            <div className="edit-icon">
+                                <FontAwesomeIcon icon={faPen} />
+                            </div>
+                        </AvatarWrapper>
+                    </Info>
 
-                <SectionElement onClick={() => showModal('username')}>
-                    Никнейм
-                    <Description>{username}</Description>
-                </SectionElement>
+                    <SectionElement onClick={() => showModal('username')}>
+                        Никнейм
+                        <Description>{username}</Description>
+                    </SectionElement>
 
-                <SectionElement onClick={() => showModal('email')}>
-                    Почта
-                    <Description>{email}</Description>
-                </SectionElement>
+                    <SectionElement onClick={() => showModal('email')}>
+                        Почта
+                        <Description>{email}</Description>
+                    </SectionElement>
 
-                <SectionElement onClick={() => showModal('password')}>
-                    Сменить пароль
-                </SectionElement>
+                    <SectionElement onClick={() => showModal('password')}>
+                        Сменить пароль
+                    </SectionElement>
 
-                <Button onClick={handleDeleteUser}>Удалить аккаунт</Button>
-            </Content>
+                    <Button onClick={handleDeleteUser}>Удалить аккаунт</Button>
+                </Content>
+            )}
 
             <Modal
                 title={
