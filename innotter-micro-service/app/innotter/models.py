@@ -1,6 +1,6 @@
 from django.db import models
 
-from innotter.managers import ParticipantManager
+from innotter.managers import ParticipantManager, PriorityManager
 
 
 class Tag(models.Model):
@@ -26,4 +26,11 @@ class Participant(models.Model):
 
     objects = ParticipantManager()
 
+
+class Priority(models.Model):
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    user_id = models.UUIDField(null=False)
+    count = models.PositiveIntegerField(default=1)
+
+    objects = PriorityManager()
 
