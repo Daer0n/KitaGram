@@ -4,36 +4,43 @@ import dayjs from 'dayjs';
 import { Container, Picker } from './styled';
 
 interface DateTimeSelectorProps {
-    dateTime: dayjs.Dayjs | null; 
-    setDateTime: (dateTime: dayjs.Dayjs | null) => void; 
+    dateTime: string;
+    setDateTime: (dateTime: string) => void;
 }
 
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({ dateTime, setDateTime }) => {
     useEffect(() => {
-        dayjs.locale('ru'); 
+        dayjs.locale('ru');
     }, []);
 
-    const handleDateChange = (date: dayjs.Dayjs | null) => {
-        if (dateTime && date) {
-            setDateTime(date.hour(dateTime.hour()).minute(dateTime.minute()));
-        } else {
-            setDateTime(date); 
+    const currentDateTime = dateTime ? dayjs(dateTime) : null;
+
+    const updateDateTime = (newDate: dayjs.Dayjs | null, newTime: dayjs.Dayjs | null) => {
+        if (newDate && newTime) {
+            const combinedDateTime = newDate.hour(newTime.hour()).minute(newTime.minute());
+            setDateTime(combinedDateTime.format('YYYY-MM-DDTHH:mm'));
+        } else if (newDate) {
+            setDateTime(newDate.format('YYYY-MM-DDTHH:mm'));
+        } else if (newTime) {
+            setDateTime(newTime.format('YYYY-MM-DDTHH:mm'));
         }
     };
 
+    const handleDateChange = (date: dayjs.Dayjs | null) => {
+        const currentTime = currentDateTime ? currentDateTime : dayjs();
+        updateDateTime(date, currentTime);
+    };
+
     const handleTimeChange = (time: dayjs.Dayjs | null) => {
-        if (dateTime && time) {
-            setDateTime(time.minute(dateTime.minute()));
-        } else {
-            setDateTime(time);
-        }
+        const currentDate = currentDateTime ? currentDateTime : dayjs();
+        updateDateTime(currentDate, time);
     };
 
     return (
         <Container>
             <Picker>
                 <DatePicker
-                    value={dateTime}
+                    value={currentDateTime}
                     onChange={handleDateChange}
                     placeholder="Выберите дату"
                     format="D MMMM"
@@ -42,7 +49,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({ dateTime, se
             </Picker>
             <Picker>
                 <TimePicker
-                    value={dateTime}
+                    value={currentDateTime}
                     onChange={handleTimeChange}
                     placeholder="Выберите время"
                     format="HH:mm"

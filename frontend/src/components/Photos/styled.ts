@@ -2,21 +2,10 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    display: flex;
     gap: 20px;
-    align-items: start;
-    justify-items: center;
     justify-content: center;
-    align-content: start;
-
-    & > :only-child {
-        grid-column: 1 / -1;
-        display: flex;
-
-        align-items: center;
-        flex-direction: column;
-    }
+    align-items: center;
 `;
 
 export const AddPhoto = styled.div`

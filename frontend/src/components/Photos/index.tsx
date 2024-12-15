@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Photo, AddPhoto } from './styled';
+import { RoomsAPI } from '@api';
 
 interface PhotosProps {
-    photos: string[];
-    setPhotos: (photos: string[]) => void;
+    setPhoto: (photos: string) => void;
 }
 
-export const Photos: React.FC<PhotosProps> = ({ photos, setPhotos }) => {
-    const handleAddPhoto = (event: React.MouseEvent) => {
+export const Photos: React.FC<PhotosProps> = ({ setPhoto }) => {
+    const [roomPhoto, setRoomPhoto] = useState<string>('');
+
+    const handleAddPhoto = async () => {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        input.onchange = (e) => {
+        input.onchange = async (e) => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (loadEvent) => {
-                    setPhotos((prevPhotos) => [...prevPhotos, loadEvent.target?.result as string]);
+                    if (loadEvent.target?.result) {
+                        setRoomPhoto(loadEvent.target.result as string);
+                    }
                 };
                 reader.readAsDataURL(file);
+
+                try {
+                    const data = await RoomsAPI.uploadPhoto(file);
+                    const url = data.url;
+                    console.log('URL', url);
+                    setPhoto(url);
+                } catch (error) {
+                    console.error('Error uploading photo:', error);
+                }
             }
         };
         input.click();
@@ -26,14 +39,15 @@ export const Photos: React.FC<PhotosProps> = ({ photos, setPhotos }) => {
 
     return (
         <Container>
-            {photos.map((photo, index) => (
-                <Photo key={index}>
-                    <img src={photo} alt={`Uploaded ${index + 1}`} />
+            {!roomPhoto ? (
+                <AddPhoto onClick={handleAddPhoto}>
+                    <span>+</span>
+                </AddPhoto>
+            ) : (
+                <Photo onClick={handleAddPhoto}>
+                    <img src={roomPhoto} alt="Uploaded" />
                 </Photo>
-            ))}
-            <AddPhoto onClick={handleAddPhoto}>
-                <span>+</span>
-            </AddPhoto>
+            )}
         </Container>
     );
 };

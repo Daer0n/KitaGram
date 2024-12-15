@@ -26,7 +26,6 @@ export const RegistrationForm = () => {
         try {
             const user: User = { email, nickname, password };
             const data = await UserAPI.signUp(user);
-            console.log(data);
 
             notification.success({
                 message: 'Регистрация успешна',

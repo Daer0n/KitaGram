@@ -1,5 +1,12 @@
 export type Room = {
     name: string;
+    description: string;
+    image_url: string;
+    category: string;
+    tags: number[];
+    datetime: string;
+    location: string;
+    participants_limit: number;
 };
 
 export type User = {
@@ -9,12 +16,11 @@ export type User = {
 };
 
 export type Tag = {
-    ID: string;
-    Name: string;
+    id: number;
+    name: string;
 };
 
 export type Category = {
-    id: string;
+    id: number;
     name: string;
-    have_subcategory: boolean;
 };
