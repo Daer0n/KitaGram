@@ -37,7 +37,7 @@ export const AccountForm = () => {
                 if (data.img_path !== 'https://example.com') {
                     setPhoto(data.img_path);
                 }
-                console.log(data);
+                //console.log(data);
                 setEmail(data.email);
                 setUsername(data.username);
             } catch (error) {
@@ -98,13 +98,14 @@ export const AccountForm = () => {
         try {
             if (formType === 'username') {
                 setUsername(newValue);
+                await UserAPI.updateUsername(newValue);
             } else if (formType === 'email') {
                 setEmail(newValue);
+                await UserAPI.updateEmail(newValue);
             } else if (formType === 'password') {
                 if (newValue !== confirmPassword) {
                     throw new Error('Пароли не совпадают');
                 }
-                //todo add request for api
             }
             notification.success({
                 message: 'Успешно',
@@ -162,7 +163,7 @@ export const AccountForm = () => {
                 <SectionElement onClick={() => showModal('password')}>
                     Сменить пароль
                 </SectionElement>
-                
+
                 <Button onClick={handleDeleteUser}>Удалить аккаунт</Button>
             </Content>
 

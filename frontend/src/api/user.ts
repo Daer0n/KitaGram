@@ -1,4 +1,3 @@
-import { Header } from '@components/Header';
 import { User } from '@types';
 import Cookies from 'js-cookie';
 
@@ -130,6 +129,50 @@ export const UserAPI = {
 
         try {
             await fetch(`${this.baseUrl}user/me`, deleteUserRequest);
+        } catch (error) {
+            console.error('Error during deleting user:', error);
+            throw error;
+        }
+    },
+
+    async updateUsername(newUsername: string) {
+        const accessToken = Cookies.get('access_token');
+
+        const updateUserRequest = {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                username: newUsername,
+            }),
+        };
+        console.log(updateUserRequest);
+        try {
+            await fetch(`${this.baseUrl}user/me`, updateUserRequest);
+        } catch (error) {
+            console.error('Error during deleting user:', error);
+            throw error;
+        }
+    },
+
+    async updateEmail(newEmail: string) {
+        const accessToken = Cookies.get('access_token');
+
+        const updateUserRequest = {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                email: newEmail,
+            }),
+        };
+
+        try {
+            await fetch(`${this.baseUrl}user/me`, updateUserRequest);
         } catch (error) {
             console.error('Error during deleting user:', error);
             throw error;
