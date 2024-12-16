@@ -3,6 +3,17 @@ import styled from 'styled-components';
 export const Container = styled.div`
     width: 100%;
     height: 100%;
+    display: flex;
+    gap: 100px;
+    flex-direction: column;
+`;
+
+export const Content = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
 `;
 
 // Container for the list of rooms
@@ -129,4 +140,19 @@ export const ErrorMessage = styled.p`
     color: red;
     text-align: center;
     margin-top: 20px;
+`;
+
+export const Title = styled.div`
+    width: 100%;
+    font-size: 40px;
+    color: #000;
+    font-weight: bold;
+    text-align: center; /* Center the text */
+    margin: 20px 0; /* Add some vertical spacing */
+    text-transform: uppercase; /* Make the text uppercase */
+    letter-spacing: 1px; /* Add spacing between letters */
+    line-height: 1.2; /* Adjust line height for better readability */
+    border-bottom: 2px solid #4c90ff; /* Add a bottom border for emphasis */
+    padding-bottom: 10px; /* Add padding below the text */
+    transition: color 0.3s ease; /* Smooth transition for color change */
 `;

@@ -137,6 +137,30 @@ export const RoomsAPI = {
             });
     },
 
+    async getMyRooms() {
+      const authToken = this.getAuthToken();
+
+      if (!authToken) {
+          throw new Error('Authorization token is missing.');
+      }
+
+      const request = {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+          },
+      };
+
+      return fetch(`${this.baseUrl}/rooms/my/`, request)
+          .then((response) => response.json())
+          .catch((error) => {
+              console.log(error);
+              console.error('Error during fetching rooms:', error);
+              throw error;
+          });
+  },
+
     async joinIntoRoom(roomID: number) {
         const authToken = this.getAuthToken();
 
