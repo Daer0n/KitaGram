@@ -31,6 +31,6 @@ class PriorityManager(models.Manager):
         for tag in tags:
             instace, created = self.get_or_create(user_id=user_id, tag=tag)
             if not created:
-                instace.counter += 1
+                instace.count += 1
                 instace.save()
         

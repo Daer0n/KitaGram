@@ -13,7 +13,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RoomSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
-
+    is_user_in_room = serializers.SerializerMethodField()
     class Meta:
         model = Room
         fields = [
@@ -27,9 +27,16 @@ class RoomSerializer(serializers.ModelSerializer):
             "location",
             "participants",
             "participants_limit",
+            "is_user_in_room",
             "created_at",
             "modified_at",
         ]
+
+    def get_is_user_in_room(self, obj):
+        user_id = self.context.get("user_id")
+        if user_id:
+            return obj.is_user_in_room(user_id)
+        return False
 
 class RoomCreateSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(

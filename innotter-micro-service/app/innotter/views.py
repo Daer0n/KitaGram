@@ -27,6 +27,12 @@ class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [JWTAuthentication]
     serializer_class = RoomSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        user_id = get_user_info(self.request).get("id")
+        context["user_id"] = user_id
+        return context
+    
     def get_queryset(self):
         user = get_user_info(self.request)
         user_id = user["id"]
