@@ -38,3 +38,25 @@ export const HeaderDateTime = styled.div`
 export const HeaderTitle = styled.h2`
     margin: 0;
 `;
+
+export const Button = styled.button<{ isLeaveButton: boolean }>`
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+
+    background-color: ${({ isLeaveButton }) =>
+        isLeaveButton ? '#ff4d4f' : '#4caf50'}; // Красный для "Выйти", зеленый для "Вступить"
+
+    &:hover {
+        background-color: ${({ isLeaveButton }) =>
+            isLeaveButton ? '#ff7875' : '#45a049'}; // Светлее при наведении
+    }
+
+    &:focus {
+        outline: none;
+    }
+`;

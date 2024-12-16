@@ -1,4 +1,3 @@
-// RoomsList.tsx
 import React, { useState, useEffect } from 'react';
 import DefaultAvatar from '@assets/images/DefaultAvatar.svg';
 import { RoomDetails } from '@components/RoomDetails';
@@ -32,6 +31,7 @@ interface Room {
     date: string;
     time: string;
     participants: number;
+    category: string;
     participantsLimit: number;
 }
 
@@ -53,6 +53,7 @@ const MyRoomList: React.FC = () => {
                     tags: room.tags,
                     date: date,
                     time: time,
+                    category: room.category,
                     participants: room.participants,
                     participantsLimit: room.participants_limit,
                 };
@@ -71,6 +72,14 @@ const MyRoomList: React.FC = () => {
         fetchData();
     }, []);
 
+    const updateParticipantsCount = (roomId: number, newCount: number) => {
+        setRooms((prevRooms) =>
+            prevRooms.map((room) =>
+                room.id === roomId ? { ...room, participants: newCount } : room,
+            ),
+        );
+    };
+
     return (
         <Container>
             {isLoading ? (
@@ -84,7 +93,7 @@ const MyRoomList: React.FC = () => {
                             </RoomsImgContainer>
                             <RoomsDataContainer>
                                 <RoomGeneralData>
-                                    <RoomType>Футбол</RoomType>
+                                    <RoomType>{room.category}</RoomType>
                                     <RoomTitle>{room.name}</RoomTitle>
                                     <RoomUsers>
                                         <div>
@@ -107,6 +116,9 @@ const MyRoomList: React.FC = () => {
                     room={selectedRoom}
                     onClose={() => setSelectedRoom(null)}
                     isLeaveButton={true}
+                    onUpdateParticipants={(newCount) =>
+                        updateParticipantsCount(selectedRoom.id, newCount)
+                    } // Передача функции обновления
                 />
             )}
         </Container>
