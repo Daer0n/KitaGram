@@ -21,6 +21,9 @@ class Room(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def is_user_in_room(self, user_id):
+        return self.participant_set.filter(user_id=user_id).exists()
+
 
 class Participant(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
