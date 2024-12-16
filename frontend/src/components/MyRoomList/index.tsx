@@ -5,6 +5,7 @@ import { RoomsAPI } from '@api';
 import { notification } from 'antd';
 import { useFetching } from '@hooks';
 import { Loader } from '@components/Loader';
+import Cookies from 'js-cookie';
 import {
     RoomsContainer,
     RoomItem,
@@ -33,6 +34,7 @@ interface Room {
     participants: number;
     category: string;
     participantsLimit: number;
+    isUserInRoom: boolean;
 }
 
 const MyRoomList: React.FC = () => {
@@ -41,36 +43,40 @@ const MyRoomList: React.FC = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const response = await RoomsAPI.getJoinedRooms();
-            const data: Room[] = response.map((room: any) => {
-                const [date, timeWithZ] = room.datetime.split('T');
-                const time = timeWithZ.replace('Z', '').slice(0, 5);
+            const data: Room[] = await Promise.all(
+                response.map(async (room: any) => {
+                    const [date, timeWithZ] = room.datetime.split('T');
+                    const time = timeWithZ.replace('Z', '').slice(0, 5);
+                    const roomsParticipants = await RoomsAPI.getRoomParticipants(room.id);
+                    const userId = Cookies.get('id');
+                    const isUserInRoom = roomsParticipants.some(
+                        (participant: any) => participant.user_id === userId,
+                    );
 
-                return {
-                    id: room.id,
-                    name: room.name,
-                    description: room.description,
-                    imageUrl: room.image_url,
-                    tags: room.tags,
-                    date: date,
-                    time: time,
-                    category: room.category,
-                    participants: room.participants,
-                    participantsLimit: room.participants_limit,
-                };
-            });
+                    return {
+                        id: room.id,
+                        name: room.name,
+                        description: room.description,
+                        imageUrl: room.image_url,
+                        category: room.category,
+                        tags: room.tags,
+                        date: date,
+                        time: time,
+                        participants: room.participants,
+                        participantsLimit: room.participants_limit,
+                        isUserInRoom,
+                    };
+                }),
+            );
             setRooms(data);
         } catch (err) {
             console.log(err);
-            notification.error({
-                message: 'Error during fetching',
-                description: '',
-            });
         }
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [selectedRoom]);
 
     const updateParticipantsCount = (roomId: number, newCount: number) => {
         setRooms((prevRooms) =>
@@ -82,43 +88,39 @@ const MyRoomList: React.FC = () => {
 
     return (
         <Container>
-            {isLoading ? (
-                <Loader />
-            ) : (
-                <RoomsContainer>
-                    {rooms.map((room) => (
-                        <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
-                            <RoomsImgContainer>
-                                <RoomsImg src={room.imageUrl} alt={room.name} />
-                            </RoomsImgContainer>
-                            <RoomsDataContainer>
-                                <RoomGeneralData>
-                                    <RoomType>{room.category}</RoomType>
-                                    <RoomTitle>{room.name}</RoomTitle>
-                                    <RoomUsers>
-                                        <div>
-                                            {room.participants}/{room.participantsLimit}
-                                        </div>
-                                        <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
-                                    </RoomUsers>
-                                </RoomGeneralData>
-                                <RoomDateTime>
-                                    <RoomDate>{room.date}</RoomDate>
-                                    <RoomTime>{room.time}</RoomTime>
-                                </RoomDateTime>
-                            </RoomsDataContainer>
-                        </RoomItem>
-                    ))}
-                </RoomsContainer>
-            )}
+            <RoomsContainer>
+                {rooms.map((room) => (
+                    <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
+                        <RoomsImgContainer>
+                            <RoomsImg src={room.imageUrl} alt={room.name} />
+                        </RoomsImgContainer>
+                        <RoomsDataContainer>
+                            <RoomGeneralData>
+                                <RoomType>{room.category}</RoomType>
+                                <RoomTitle>{room.name}</RoomTitle>
+                                <RoomUsers>
+                                    <div>
+                                        {room.participants}/{room.participantsLimit}
+                                    </div>
+                                    <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
+                                </RoomUsers>
+                            </RoomGeneralData>
+                            <RoomDateTime>
+                                <RoomDate>{room.date}</RoomDate>
+                                <RoomTime>{room.time}</RoomTime>
+                            </RoomDateTime>
+                        </RoomsDataContainer>
+                    </RoomItem>
+                ))}
+            </RoomsContainer>
+
             {selectedRoom && (
                 <RoomDetails
                     room={selectedRoom}
                     onClose={() => setSelectedRoom(null)}
-                    isLeaveButton={true}
                     onUpdateParticipants={(newCount) =>
                         updateParticipantsCount(selectedRoom.id, newCount)
-                    } // Передача функции обновления
+                    }
                 />
             )}
         </Container>

@@ -92,6 +92,28 @@ export const UserAPI = {
             });
     },
 
+    async getInfoAboutUser(userId: string) {
+        const accessToken = Cookies.get('access_token');
+        const getInfoRequest = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        return fetch(`${this.baseUrl}user/${userId}`, getInfoRequest)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .catch((error) => {
+                console.error('Error during info about me:', error);
+                throw error;
+            });
+    },
+
     async uploadPhoto(file: File) {
         const accessToken = Cookies.get('access_token');
         const formData = new FormData();

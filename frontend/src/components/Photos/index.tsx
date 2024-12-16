@@ -27,7 +27,6 @@ export const Photos: React.FC<PhotosProps> = ({ setPhoto }) => {
                 try {
                     const data = await RoomsAPI.uploadPhoto(file);
                     const url = data.url;
-                    console.log('URL', url);
                     setPhoto(url);
                 } catch (error) {
                     console.error('Error uploading photo:', error);

@@ -12,7 +12,6 @@ export const RoomsContainer = styled.div`
     gap: 24px;
     padding: 24px;
     font-family: 'Arial', sans-serif;
-    background-color: #f5f7fb;
     height: 100%;
 `;
 

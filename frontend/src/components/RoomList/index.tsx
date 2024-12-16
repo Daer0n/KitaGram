@@ -19,6 +19,8 @@ import { Search } from '@components/SearchRooms';
 import { RoomDetails } from '@components/RoomDetails';
 import { RoomsAPI } from '@api';
 import { notification } from 'antd';
+import { useFetching } from '@hooks';
+import Cookies from 'js-cookie';
 
 interface Room {
     id: number;
@@ -29,8 +31,10 @@ interface Room {
     tags: number[];
     date: string;
     time: string;
+    location: string;
     participants: number;
     participantsLimit: number;
+    isUserInRoom: boolean;
 }
 
 const RoomList: React.FC = () => {
@@ -38,16 +42,17 @@ const RoomList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-
-    // Fetch open rooms
-    useEffect(() => {
-        const fetchOpenRooms = async () => {
-            setLoading(true);
-            try {
-                const response = await RoomsAPI.rooms();
-                const data: Room[] = response.map((room: any) => {
+    const [fetchData, isLoading] = useFetching(async () => {
+        try {
+            const response = await RoomsAPI.rooms();
+            const data: Room[] = await Promise.all(
+                response.map(async (room: any) => {
                     const [date, timeWithZ] = room.datetime.split('T');
                     const time = timeWithZ.replace('Z', '').slice(0, 5);
+                    const data = await RoomsAPI.getRoomParticipants(room.id);
+                    const roomsParticipants = data.map((participant) => participant.user_id);
+                    const userId = Cookies.get('id');
+                    const isUserInRoom = roomsParticipants.includes(userId);
 
                     return {
                         id: room.id,
@@ -58,23 +63,23 @@ const RoomList: React.FC = () => {
                         tags: room.tags,
                         date: date,
                         time: time,
+                        location: room.location,
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
+                        isUserInRoom,
                     };
-                });
-                setRooms(data);
-            } catch (err) {
-                notification.error({
-                    message: 'Error during fetching',
-                    description: '',
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
+                }),
+            );
 
-        fetchOpenRooms();
-    }, []);
+            setRooms(data);
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    useEffect(() => {
+        fetchData();
+    }, [selectedRoom]);
 
     const updateParticipantsCount = (roomId: number, newCount: number) => {
         setRooms((prevRooms) =>
@@ -83,7 +88,6 @@ const RoomList: React.FC = () => {
             ),
         );
 
-        // Обновляем состояние selectedRoom, чтобы отобразить изменения
         if (selectedRoom && selectedRoom.id === roomId) {
             setSelectedRoom((prev) => (prev ? { ...prev, participants: newCount } : null));
         }
@@ -93,11 +97,12 @@ const RoomList: React.FC = () => {
         <div>
             <Search setRooms={setRooms} setError={setError} setLoading={setLoading} />
             <RoomsContainer>
-                {loading && <p>Loading...</p>}
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-
                 {rooms.map((room) => (
-                    <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
+                    <RoomItem
+                        key={room.id}
+                        onClick={() => setSelectedRoom(room)}
+                        isUserInRoom={room.isUserInRoom}
+                    >
                         <RoomsImgContainer>
                             <RoomsImg src={room.imageUrl} />
                         </RoomsImgContainer>
@@ -125,10 +130,9 @@ const RoomList: React.FC = () => {
                 <RoomDetails
                     room={selectedRoom}
                     onClose={() => setSelectedRoom(null)}
-                    isLeaveButton={false}
                     onUpdateParticipants={(newCount) =>
                         updateParticipantsCount(selectedRoom.id, newCount)
-                    } // Передача функции обновления
+                    }
                 />
             )}
         </div>

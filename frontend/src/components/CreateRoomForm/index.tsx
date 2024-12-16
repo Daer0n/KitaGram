@@ -73,13 +73,11 @@ export const CreateRoomForm = () => {
             participants_limit: members,
         };
         try {
-            console.log(room.image_url);
             const data = await RoomsAPI.createRoom(room);
             notification.success({
                 message: 'Комната успешно создана!',
                 description: 'Вы можете теперь управлять этой комнатой.',
             });
-            console.log('Response:', data);
         } catch (error) {
             notification.error({
                 message: 'Ошибка при создании комнаты',

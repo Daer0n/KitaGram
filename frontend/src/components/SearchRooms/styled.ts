@@ -38,11 +38,11 @@ export const Tag = styled.div<{ isSelected: boolean }>`
     border-radius: 20px;
     padding: 10px 16px;
     font-size: 14px;
-    color: ${({ isSelected }) => (isSelected ? '#fff' : '#333')};
-    background-color: ${({ isSelected }) => (isSelected ? '#ff5c5c' : '#e0e0e0')};
     border: 2px solid ${({ isSelected }) => (isSelected ? '#ff1a1a' : 'transparent')};
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    color: ${({ isSelected }) => (isSelected ? '#fff' : '#333')};
+    background-color: ${({ isSelected }) => (isSelected ? '#ff5c5c' : '#e0e0e0')};
 
     &:hover {
         transform: scale(1.05);
@@ -51,22 +51,44 @@ export const Tag = styled.div<{ isSelected: boolean }>`
 `;
 
 export const LoadMoreButton = styled.button`
-    background-color: #4a90e2;
-    color: white; 
-    border: none; 
-    border-radius: 10px; 
-    padding: 10px 15px; 
-    font-size: 16px; 
-    width: 300px;
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    border: 2px solid #438af9;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    color: #fff;
+    background-color: #438af9;
 
     &:hover {
-        background-color: #357abd; 
+        transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     &:disabled {
-        background-color: #ccc; 
-        cursor: not-allowed; 
+        background-color: #ccc;
+        cursor: not-allowed;
     }
 `;
+
+export const HideTagsButton = styled.button`
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    border: 2px solid #ff5c5c;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    color: #fff;
+    background-color: #ff5c5c;
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+`;
+    

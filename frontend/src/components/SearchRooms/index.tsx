@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 import { RoomsAPI } from '@api';
 import {
-  SearchInput,
-  SearchFilterInputContainer,
-  TagsContainer,
-  Tag,
-  LoadMoreButton,
+    SearchInput,
+    SearchFilterInputContainer,
+    TagsContainer,
+    Tag,
+    LoadMoreButton,
+    HideTagsButton,
 } from './styled';
 
 interface Room {
@@ -35,6 +36,7 @@ const Search: React.FC<SearchProps> = ({ setRooms, setError, setLoading }) => {
     const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [query, setQuery] = useState('');
     const [visibleTagsCount, setVisibleTagsCount] = useState(5);
+    const [showAllTags, setShowAllTags] = useState(false);
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -47,10 +49,7 @@ const Search: React.FC<SearchProps> = ({ setRooms, setError, setLoading }) => {
                 }));
                 setTags(data);
             } catch (err) {
-                notification.error({
-                    message: 'Error during fetching',
-                    description: '',
-                });
+                console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -98,17 +97,19 @@ const Search: React.FC<SearchProps> = ({ setRooms, setError, setLoading }) => {
             });
             setRooms(data);
         } catch (err) {
-            notification.error({
-                message: 'Error during fetching',
-                description: '',
-            });
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
     const loadMoreTags = () => {
-        setVisibleTagsCount((prevCount) => Math.min(prevCount + 5, tags.length));
+        setVisibleTagsCount(tags.length);
+    };
+
+    const hideTags = () => {
+        setVisibleTagsCount(5);
+        setShowAllTags(false);
     };
 
     return (
@@ -120,7 +121,7 @@ const Search: React.FC<SearchProps> = ({ setRooms, setError, setLoading }) => {
                 placeholder="Поиск комнаты по названию..."
             />
             <TagsContainer>
-                {tags.slice(0, visibleTagsCount).map((tag) => (
+                {tags.slice(0, showAllTags ? tags.length : visibleTagsCount).map((tag) => (
                     <Tag
                         key={tag.id}
                         onClick={() => handleTagClick(tag.id)}
@@ -129,10 +130,13 @@ const Search: React.FC<SearchProps> = ({ setRooms, setError, setLoading }) => {
                         {tag.name}
                     </Tag>
                 ))}
+                {visibleTagsCount < tags.length && !showAllTags && (
+                    <LoadMoreButton onClick={loadMoreTags}>Показать еще</LoadMoreButton>
+                )}
+                {visibleTagsCount > 5 && (
+                    <HideTagsButton onClick={hideTags}>Скрыть </HideTagsButton>
+                )}
             </TagsContainer>
-            {visibleTagsCount < tags.length && (
-                <LoadMoreButton onClick={loadMoreTags}>Показать еще 5 тегов</LoadMoreButton>
-            )}
         </SearchFilterInputContainer>
     );
 };

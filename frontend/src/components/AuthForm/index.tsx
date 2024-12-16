@@ -26,9 +26,10 @@ export const AuthForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await UserAPI.signIn({ nickname, password });
-
             Cookies.set('access_token', data.access_token, { expires: 7 });
             Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
+            const user = await UserAPI.getInfo();
+            Cookies.set('id', user.id, { expires: 7 });
 
             navigate('/home');
         } catch (err) {

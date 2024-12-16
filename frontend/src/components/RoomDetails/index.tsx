@@ -1,5 +1,5 @@
-import React from 'react';
-import { RoomsAPI } from '@api';
+import React, { useEffect, useState } from 'react';
+import { RoomsAPI, UserAPI } from '@api';
 import {
     ImageContainer,
     RoomImage,
@@ -9,6 +9,12 @@ import {
     HeaderDateTime,
     HeaderTitle,
     Button,
+    Avatar,
+    Avatars,
+    TagsContainer,
+    Tag,
+    HeaderLocation,
+    ParticipantsInfo,
 } from './styled';
 import { Modal, notification } from 'antd';
 
@@ -23,58 +29,77 @@ interface Room {
     category: string;
     participants: number;
     participantsLimit: number;
+    isUserInRoom: boolean;
+    location: string;
 }
 
 interface RoomDetailsProps {
     room: Room | null;
     onClose: () => void;
-    isLeaveButton: boolean;
-    onUpdateParticipants: (count: number) => void; // Функция для обновления участников
+    onUpdateParticipants: (count: number) => void;
 }
 
-const RoomDetails: React.FC<RoomDetailsProps> = ({
-    room,
-    onClose,
-    isLeaveButton,
-    onUpdateParticipants,
-}) => {
+const RoomDetails: React.FC<RoomDetailsProps> = ({ room, onClose, onUpdateParticipants }) => {
+    const [usersAvatar, setUsersAvatar] = useState<string[]>([]);
+    const [tags, setTags] = useState<string[]>([]);
+
     if (!room) return null;
 
     const handleJoinRoom = async () => {
         try {
             await RoomsAPI.joinIntoRoom(room.id);
-            onUpdateParticipants(room.participants + 1); // Увеличиваем счетчик участников
-
+            onUpdateParticipants(room.participants + 1);
             notification.success({
-                message: `Successfully joined the room: ${room.name}`,
-                description: '',
+                message: `Вы успешно вступили в комнату: ${room.name}`,
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
             notification.error({
-                message: 'Error during joining the room',
-                description: '',
+                message: 'Ошибка при вступлении в комнату',
             });
         }
+        onClose();
     };
 
     const handleLeaveRoom = async () => {
         try {
             await RoomsAPI.leaveRoom(room.id);
-            onUpdateParticipants(room.participants - 1); // Уменьшаем счетчик участников
-
+            onUpdateParticipants(room.participants - 1);
             notification.success({
-                message: `Successfully left the room: ${room.name}`,
-                description: '',
+                message: `Вы успешно покинули комнату: ${room.name}`,
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
             notification.error({
-                message: 'Error during leaving the room',
-                description: '',
+                message: 'Ошибка при выходе из комнаты',
             });
         }
+        onClose();
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await RoomsAPI.getRoomParticipants(room.id);
+                const usersId = data.map((user) => user.user_id);
+                const usersInfo = await Promise.all(
+                    usersId.map((id: string) => UserAPI.getInfoAboutUser(id)),
+                );
+                const avatars = usersInfo.map((user) => user.img_path);
+                setUsersAvatar(avatars);
+            } catch (error) {
+                console.error('Ошибка при получении участников комнаты:', error);
+            }
+        };
+
+        fetchData();
+    }, [room.id]);
+
+    useEffect(() => {
+        const data = room.tags;
+        const roomsTags = data.map((tag: any) => tag.name);
+        setTags(roomsTags);
+    }, [room.tags]);
 
     return (
         <Modal
@@ -97,17 +122,40 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({
                         <div>{room.date}</div>
                         <div>{room.time}</div>
                     </HeaderDateTime>
+                    <HeaderLocation>{room.location}</HeaderLocation>
                 </HeaderContainer>
-                <p>
-                    <strong>Participants:</strong>
+
+                {tags.length > 0 && (
+                    <TagsContainer>
+                        {tags.map((tag) => (
+                            <Tag key={tag}>{tag}</Tag>
+                        ))}
+                    </TagsContainer>
+                )}
+
+                <ParticipantsInfo>
+                    <strong>Участники:</strong>
                     {room.participants}/{room.participantsLimit}
-                </p>
-                <Button
-                    isLeaveButton={isLeaveButton}
-                    onClick={isLeaveButton ? handleLeaveRoom : handleJoinRoom}
-                >
-                    {isLeaveButton ? 'Выйти' : 'Вступить'}
-                </Button>
+                </ParticipantsInfo>
+
+                {usersAvatar.length > 0 && (
+                    <Avatars>
+                        {usersAvatar.map((photo) => (
+                            <Avatar key={photo}>
+                                <img src={photo} alt="avatar" />
+                            </Avatar>
+                        ))}
+                    </Avatars>
+                )}
+
+                {room.participants < room.participantsLimit && !room.isUserInRoom && (
+                    <Button onClick={handleJoinRoom}>Вступить</Button>
+                )}
+                {room.isUserInRoom && (
+                    <Button isLeaveButton={true} onClick={handleLeaveRoom}>
+                        Выйти
+                    </Button>
+                )}
             </ContentContainer>
         </Modal>
     );
