@@ -23,8 +23,9 @@ export const OptionsForm = () => {
         try {
             const data = await UserAPI.getInfo();
 
-            if (data.img_path !== 'https://example.com') {
+            if (data.img_path !== 'https://example.com/') {
                 setPhoto(data.img_path);
+                console.log("Yes")
             }
         } catch (error) {
             console.error('Ошибка при получении данных:', error);
@@ -34,6 +35,8 @@ export const OptionsForm = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    console.log(photo);
 
     return (
         <Container>

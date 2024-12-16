@@ -34,7 +34,8 @@ export const AccountForm = () => {
     const [fetchData, isLoading] = useFetching(async () => {
         try {
             const data = await UserAPI.getInfo();
-            if (data.img_path !== 'https://example.com') {
+            console.log(`IMG ${data.img_path}`);
+            if (data.img_path !== 'https://example.com/') {
                 setPhoto(data.img_path);
             }
             setEmail(data.email);

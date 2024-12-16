@@ -10,7 +10,6 @@ import {
   HeaderDateTime,
   HeaderTitle
 } from './styled';
-// import { API } from '@api';
 import { Modal, notification } from 'antd';
 
 

@@ -3,35 +3,44 @@ import Rooms from '@assets/images/Rooms.svg';
 import Options from '@assets/images/Options.svg';
 import Home from '@assets/images/Home.svg';
 import NewRoom from '@assets/images/NewRoom.svg';
-import { useNavigate } from 'react-router-dom';
+import RoomsPick from '@assets/images/RoomsPick.svg';
+import OptionsPick from '@assets/images/OptionsPick.svg';
+import HomePick from '@assets/images/HomePick.svg';
+import NewRoomPick from '@assets/images/NewRoomPick.svg';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Icon, IconContainer, LogoContainer } from './styled';
 
 export const Header = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  return (
-    <Container>
-      <LogoContainer onClick={() => navigate('/home')}>
-        <img src={Logo} alt="Home" />
-      </LogoContainer>
+    const getIcon = (path: string, defaultIcon: string, pickedIcon: string) => {
+        return location.pathname === path ? pickedIcon : defaultIcon;
+    };
 
-      <IconContainer>
-        <Icon onClick={() => navigate('/home')}>
-          <img src={Home} alt="Home" />
-        </Icon>
+    return (
+        <Container>
+            <LogoContainer onClick={() => navigate('/home')}>
+                <img src={Logo} alt="Home" />
+            </LogoContainer>
 
-        <Icon onClick={() => navigate('/create-room')}>
-          <img src={NewRoom} alt="NewRoom" />
-        </Icon>
+            <IconContainer>
+                <Icon onClick={() => navigate('/home')}>
+                    <img src={getIcon('/home', Home, HomePick)} alt="Home" />
+                </Icon>
 
-        <Icon onClick={() => navigate('/rooms/my')}>
-          <img src={Rooms} alt="Home" />
-        </Icon>
+                <Icon onClick={() => navigate('/create-room')}>
+                    <img src={getIcon('/create-room', NewRoom, NewRoomPick)} alt="New Room" />
+                </Icon>
 
-        <Icon onClick={() => navigate('/options')}>
-          <img src={Options} alt="Options" />
-        </Icon>
-      </IconContainer>
-    </Container>
-  );
+                <Icon onClick={() => navigate('/rooms/my')}>
+                    <img src={getIcon('/rooms/my', Rooms, RoomsPick)} alt="Rooms" />
+                </Icon>
+
+                <Icon onClick={() => navigate('/options')}>
+                    <img src={getIcon('/options', Options, OptionsPick)} alt="Options" />
+                </Icon>
+            </IconContainer>
+        </Container>
+    );
 };

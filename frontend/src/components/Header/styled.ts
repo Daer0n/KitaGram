@@ -15,7 +15,7 @@ export const IconContainer = styled.div`
     gap: 30px;
     height: 88px;
     border-radius: 8px;
-    padding: 30px
+    padding: 30px;
 `;
 
 export const Icon = styled.div`
