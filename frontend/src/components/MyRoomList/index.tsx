@@ -214,13 +214,8 @@ const MyRoomList: React.FC = () => {
                         setIsEditing(false);
                         setSelectedRoom(null);
                     }}
-                    onUpdateRoom={(updatedRoom) => {
-                        setMyRooms((prev) =>
-                            prev.map((r) =>
-                                r.id === updatedRoom.id ? { ...r, ...updatedRoom } : r,
-                            ),
-                        );
-                    }}
+                    onUpdateRoom={fetchMyRooms}
+                    onDeleteRoom={fetchMyRooms}
                 />
             )}
 
@@ -230,8 +225,8 @@ const MyRoomList: React.FC = () => {
                     onClose={() => setSelectedRoom(null)}
                     onUpdateParticipants={(newCount) =>
                         updateParticipantsCount(selectedRoom.id, newCount)
-                        
-                        
+
+
                     }
                 />
             )}

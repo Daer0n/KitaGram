@@ -26,7 +26,8 @@ interface RoomEditProps {
     room: Room;
     visible: boolean;
     onClose: () => void;
-    onUpdateRoom: (updatedRoom: Room) => void;
+    onUpdateRoom: () => void;
+    onDeleteRoom: () => void;
 }
 
 const categories = [
@@ -38,7 +39,7 @@ const categories = [
     { id: 6, name: 'Настольные игры' },
 ];
 
-const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoom }) => {
+const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoom, onDeleteRoom }) => {
     const [form] = Form.useForm();
     const [coordinates, setCoordinates] = useState<number[]>([53.9045, 27.559]);
     const [tags, setTags] = useState<Tag[]>([]);
@@ -106,6 +107,7 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
             notification.success({
                 message: 'Комната успешно обновлена!',
             });
+            onUpdateRoom();
             onClose();
         } catch (error) {
             console.error('Ошибка при обновлении комнаты:', error);
@@ -129,6 +131,7 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
                 notification.success({
                     message: 'Комната успешно удалена!',
                 });
+                onDeleteRoom();
                 onClose();
             } else {
                 throw new Error('Не удалось удалить комнату');

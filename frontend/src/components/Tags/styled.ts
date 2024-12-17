@@ -10,11 +10,13 @@ export const Container = styled.div`
 export const Element = styled.div<{ isSelected: boolean }>`
     border-radius: 20px;
     background-color: ${({ isSelected }) => (isSelected ? '#ff5c5c' : '#d9d9d9')};
+    color: ${({ isSelected }) => (isSelected ? '#fff' : '#000')};
     display: flex;
     padding: 10px;
     justify-content: center;
     align-items: center;
     font-size: 20px;
+    
 
     flex: 1;
     cursor: pointer;
