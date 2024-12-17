@@ -34,7 +34,7 @@ interface Room {
     location: string;
     participants: number;
     participantsLimit: number;
-    isuserinroom: boolean;
+    isUserInRoom: boolean;
 }
 
 const RoomList: React.FC = () => {
@@ -61,7 +61,7 @@ const RoomList: React.FC = () => {
                         location: room.location,
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
-                        isuserinroom: room.is_user_in_room,
+                        isUserInRoom: room.is_user_in_room,
                     };
                 }),
             );
@@ -96,7 +96,7 @@ const RoomList: React.FC = () => {
                     <RoomItem
                         key={room.id}
                         onClick={() => setSelectedRoom(room)}
-                        $isuserinroom={room.isuserinroom}
+                        $isUserInRoom={room.isUserInRoom}
                     >
                         <RoomsImgContainer>
                             <RoomsImg src={room.imageUrl} />

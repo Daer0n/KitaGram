@@ -138,28 +138,28 @@ export const RoomsAPI = {
     },
 
     async getMyRooms() {
-      const authToken = this.getAuthToken();
+        const authToken = this.getAuthToken();
 
-      if (!authToken) {
-          throw new Error('Authorization token is missing.');
-      }
+        if (!authToken) {
+            throw new Error('Authorization token is missing.');
+        }
 
-      const request = {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${authToken}`,
-          },
-      };
+        const request = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+        };
 
-      return fetch(`${this.baseUrl}/rooms/my/`, request)
-          .then((response) => response.json())
-          .catch((error) => {
-              console.log(error);
-              console.error('Error during fetching rooms:', error);
-              throw error;
-          });
-  },
+        return fetch(`${this.baseUrl}/rooms/my/`, request)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.log(error);
+                console.error('Error during fetching rooms:', error);
+                throw error;
+            });
+    },
 
     async joinIntoRoom(roomID: number) {
         const authToken = this.getAuthToken();
@@ -229,6 +229,68 @@ export const RoomsAPI = {
             .catch((error) => {
                 console.log(error);
                 console.error('Error during fetching rooms:', error);
+                throw error;
+            });
+    },
+
+    async deleteRoom(roomID: number) {
+        const authToken = this.getAuthToken();
+
+        if (!authToken) {
+            throw new Error('Authorization token is missing.');
+        }
+
+        const request = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+        };
+
+        return fetch(`${this.baseUrl}/rooms/${roomID}/`, request)
+            .then((response) => response)
+            .catch((error) => {
+                console.log(error);
+                console.error('Error during joining into the room:', error);
+                throw error;
+            });
+    },
+
+    async updateRoom(roomID: number, room: Room) {
+        const authToken = this.getAuthToken();
+
+        if (!authToken) {
+            throw new Error('Authorization token is missing.');
+        }
+
+        console.log(room);
+
+        const request = {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+                name: room.name,
+                description: room.description,
+                image_url: room.image_url,
+                category: room.category,
+                tags: room.tags,
+                datetime: room.datetime,
+                location: room.location,
+                participants_limit: room.participants_limit,
+            }),
+        };
+
+        console.log(request);
+
+        return fetch(`${this.baseUrl}/rooms/${roomID}/`, request)
+            .then((response) => response)
+            .catch((error) => {
+                console.log(error);
+                console.error('Error during joining into the room:', error);
                 throw error;
             });
     },

@@ -5,6 +5,7 @@ import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 import { UploadOutlined } from '@ant-design/icons';
 import { ImagePreview } from './styled';
 import { Tag } from '@types';
+import { DateTimeSelector } from '@components/DateTimeSelector';
 
 interface Room {
     id: number;
@@ -12,8 +13,8 @@ interface Room {
     description: string;
     imageUrl: string;
     tags: number[];
-    date: string;
-    time: string;
+    date: string; // Дата
+    time: string; // Время
     participants: number;
     category: string;
     participantsLimit: number;
@@ -41,13 +42,19 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
     const [form] = Form.useForm();
     const [coordinates, setCoordinates] = useState<number[]>([53.9045, 27.559]);
     const [tags, setTags] = useState<Tag[]>([]);
+    const [selectedTags, setSelectedTags] = useState<number[]>([]);
+    const [dateTime, setDateTime] = useState<string>('');
+    const [fileList, setFileList] = useState<File[]>([]);
+
+    useEffect(() => {
+        setDateTime(room.date + room.time);
+    }, [room]);
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await RoomsAPI.tags();
             setTags(data);
         };
-
         fetchData();
     }, []);
 
@@ -55,7 +62,6 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
         if (room && room.location) {
             try {
                 const parsedLocation = JSON.parse(room.location);
-                console.log(parsedLocation);
                 setCoordinates(parsedLocation);
             } catch (error) {
                 console.error('Ошибка при парсинге местоположения:', error);
@@ -67,12 +73,36 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
             description: room.description,
             imageUrl: room.imageUrl,
             category: room.category,
-            participantsLimit: room.participantsLimit,
+            participants_limit: room.participantsLimit,
+            tags: room.tags.map((tag: any) => tag.id),
         });
+
+        setSelectedTags(room.tags.map((tag: any) => tag.id));
+
+        setDateTime(room.date);
     }, [room, form]);
+
+    const handleUploadChange = ({ fileList: newFileList }: any) => {
+        setFileList(newFileList.map((file) => file.originFileObj));
+    };
 
     const handleSave = async (values: any) => {
         try {
+            let imageUrl: string = '';
+            if (fileList.length > 0) {
+                const data = await RoomsAPI.uploadPhoto(fileList[0]);
+                imageUrl = data.url;
+            }
+
+            const updatedRoom = {
+                ...values,
+                image_url: imageUrl,
+                tags: selectedTags,
+                date: dateTime,
+                location: JSON.stringify(coordinates),
+            };
+
+            await RoomsAPI.updateRoom(room.id, updatedRoom);
             notification.success({
                 message: 'Комната успешно обновлена!',
             });
@@ -81,6 +111,7 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
             console.error('Ошибка при обновлении комнаты:', error);
             notification.error({
                 message: 'Ошибка при обновлении комнаты',
+                description: error.message || 'Произошла ошибка',
             });
         }
     };
@@ -89,6 +120,26 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
         const coords = event.get('coords');
         setCoordinates(coords);
         form.setFieldsValue({ location: JSON.stringify(coords) });
+    };
+
+    const handleDeleteRoom = async () => {
+        try {
+            const response = await RoomsAPI.deleteRoom(room.id);
+            if (response && response.status === 204) {
+                notification.success({
+                    message: 'Комната успешно удалена!',
+                });
+                onClose();
+            } else {
+                throw new Error('Не удалось удалить комнату');
+            }
+        } catch (error) {
+            console.error('Ошибка при удалении комнаты:', error);
+            notification.error({
+                message: 'Ошибка при удалении комнаты',
+                description: error.message || 'Произошла ошибка',
+            });
+        }
     };
 
     return (
@@ -140,14 +191,50 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
 
                         <Form.Item
                             label="Количество участников"
-                            name="participantsLimit"
+                            name="participants_limit"
                             rules={[{ required: true, message: 'Введите количество участников!' }]}
                         >
                             <Input type="number" min={1} />
                         </Form.Item>
 
+                        <Form.Item label="Дата и время" style={{ width: '100%' }}>
+                            <DateTimeSelector
+                                dateTime={dateTime}
+                                setDateTime={setDateTime}
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+
+                        <Form.Item label="Теги" name="tags">
+                            <Select
+                                mode="multiple"
+                                placeholder="Выберите теги"
+                                value={selectedTags}
+                                onChange={(value) => {
+                                    setSelectedTags(value);
+                                    form.setFieldsValue({ tags: value });
+                                }}
+                            >
+                                {tags.map((tag) => (
+                                    <Select.Option key={tag.id} value={tag.id}>
+                                        {tag.name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+
                         <Form.Item label="Загрузить изображение">
-                            <Upload beforeUpload={() => false}>
+                            <Upload
+                                beforeUpload={() => false}
+                                onChange={handleUploadChange}
+                                fileList={fileList.map((file) => ({
+                                    uid: file.name,
+                                    name: file.name,
+                                    status: 'done',
+                                    originFileObj: file,
+                                }))}
+                                maxCount={1}
+                            >
                                 <Button icon={<UploadOutlined />}>Выберите файл</Button>
                             </Upload>
                         </Form.Item>
@@ -160,13 +247,22 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
                             >
                                 Сохранить
                             </Button>
-                            <Button onClick={onClose}>Отменить</Button>
+                            <Button
+                                onClick={handleDeleteRoom}
+                                style={{
+                                    backgroundColor: '#ff5c5c',
+                                    color: '#fff',
+                                    border: 'none',
+                                }}
+                            >
+                                Удалить комнату
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Col>
                 <Col span={16}>
                     <ImagePreview
-                        src={form.getFieldValue('imageUrl') || room.imageUrl}
+                        src={room.imageUrl}
                         alt="Room Preview"
                         style={{ width: '600px', height: '400px' }}
                     />
@@ -174,7 +270,7 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
                     <YMaps>
                         <Map
                             defaultState={{ center: coordinates, zoom: 9 }}
-                            style={{ width: '600px', height: '400px', marginTop: '50px' }}
+                            style={{ width: '600px', height: '350px', marginTop: '20px' }}
                             onClick={handleMapClick}
                         >
                             <Placemark

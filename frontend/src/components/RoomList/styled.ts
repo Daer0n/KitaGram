@@ -13,16 +13,16 @@ export const RoomsContainer = styled.div`
 // Each individual room item
 
 interface RoomItemProps {
-    $isuserinroom: boolean;
+    $isUserInRoom: boolean;
 }
 
 export const RoomItem = styled.div<RoomItemProps>`
     display: flex;
     flex-direction: column;
     border-radius: 16px;
-    background: ${({ $isuserinroom }) =>
-        $isuserinroom
-            ? 'linear-gradient(135deg, #6a5acd, #8a2be2)' 
+    background: ${({ $isUserInRoom }) =>
+        $isUserInRoom
+            ? 'linear-gradient(135deg, #6a5acd, #8a2be2)'
             : 'linear-gradient(135deg, #4c90ff, #2460bc)'};
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     color: #fff;

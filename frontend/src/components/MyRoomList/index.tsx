@@ -88,9 +88,9 @@ const MyRoomList: React.FC = () => {
                     const time = timeWithZ.replace('Z', '').slice(0, 5);
                     const roomsParticipants = await RoomsAPI.getRoomParticipants(room.id);
                     const userId = Cookies.get('id');
-                    const isUserInRoom = roomsParticipants.some(
-                        (participant: any) => participant.user_id === userId,
-                    );
+                    const buf = roomsParticipants.map((partcipant) => partcipant.user_id);
+                    const isUserInRoom = buf.includes(userId);
+                    console.log(isUserInRoom);
 
                     return {
                         id: room.id,
@@ -116,11 +116,11 @@ const MyRoomList: React.FC = () => {
 
     useEffect(() => {
         fetchMyRooms();
-    }, [myRooms]);
+    }, []);
 
     useEffect(() => {
         fetchJoinedRooms();
-    }, [joinedRooms]);
+    }, []);
 
     const updateParticipantsCount = (roomId: number, newCount: number) => {
         setJoinedRooms((prevRooms) =>
@@ -230,6 +230,8 @@ const MyRoomList: React.FC = () => {
                     onClose={() => setSelectedRoom(null)}
                     onUpdateParticipants={(newCount) =>
                         updateParticipantsCount(selectedRoom.id, newCount)
+                        
+                        
                     }
                 />
             )}

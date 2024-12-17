@@ -11,6 +11,7 @@ export const Container = styled.div`
 
 export const Picker = styled.div`
     width: 40%;
+    min-width: 300px;
     display: flex;
     gap: 10px;
     justify-content: center;
