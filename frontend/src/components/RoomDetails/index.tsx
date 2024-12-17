@@ -30,7 +30,7 @@ interface Room {
   category: string;
   participants: number;
   participantsLimit: number;
-  isUserInRoom: boolean;
+  isuserinroom: boolean;
   location: string;
 }
 
@@ -82,7 +82,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, onClose, onUpdatePartic
     const fetchData = async () => {
       try {
         const data = await RoomsAPI.getRoomParticipants(room.id);
-        const usersId = data.map((user) => user.user_id);
+        const usersId = data.map((user: any) => user.user_id);
         const usersInfo = await Promise.all(
           usersId.map((id: string) => UserAPI.getInfoAboutUser(id)),
         );

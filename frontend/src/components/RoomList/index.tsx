@@ -34,7 +34,7 @@ interface Room {
     location: string;
     participants: number;
     participantsLimit: number;
-    isUserInRoom: boolean;
+    isuserinroom: boolean;
 }
 
 const RoomList: React.FC = () => {
@@ -49,11 +49,6 @@ const RoomList: React.FC = () => {
                 response.map(async (room: any) => {
                     const [date, timeWithZ] = room.datetime.split('T');
                     const time = timeWithZ.replace('Z', '').slice(0, 5);
-                    const data = await RoomsAPI.getRoomParticipants(room.id);
-                    const roomsParticipants = data.map((participant) => participant.user_id);
-                    const userId = Cookies.get('id');
-                    const isUserInRoom = roomsParticipants.includes(userId);
-
                     return {
                         id: room.id,
                         name: room.name,
@@ -66,7 +61,7 @@ const RoomList: React.FC = () => {
                         location: room.location,
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
-                        isUserInRoom,
+                        isuserinroom: room.is_user_in_room,
                     };
                 }),
             );
@@ -101,7 +96,7 @@ const RoomList: React.FC = () => {
                     <RoomItem
                         key={room.id}
                         onClick={() => setSelectedRoom(room)}
-                        isUserInRoom={room.isUserInRoom}
+                        $isuserinroom={room.isuserinroom}
                     >
                         <RoomsImgContainer>
                             <RoomsImg src={room.imageUrl} />
