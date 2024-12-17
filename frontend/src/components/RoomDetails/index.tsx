@@ -24,6 +24,7 @@ import {
 } from './styled';
 import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 import { Modal, notification } from 'antd';
+import DefaultAvatar from '@assets/images/DefaultAvatar.svg';
 
 interface Room {
     id: number;
@@ -112,6 +113,8 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, onClose, onUpdatePartic
 
     const locationCoordinates = room.location ? JSON.parse(room.location) : null;
 
+    console.log(usersAvatar);
+
     return (
         <Modal
             open={true}
@@ -194,7 +197,11 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, onClose, onUpdatePartic
                         <Avatars>
                             {usersAvatar.map((photo) => (
                                 <Avatar key={photo}>
-                                    <img src={photo} alt="avatar" />
+                                    {photo === 'https://example.com/' ? (
+                                        <img src={DefaultAvatar} alt="avatar" />
+                                    ) : (
+                                        <img src={photo} alt="avatar" />
+                                    )}
                                 </Avatar>
                             ))}
                         </Avatars>

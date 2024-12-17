@@ -88,7 +88,7 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
 
     const handleSave = async (values: any) => {
         try {
-            let imageUrl: string = '';
+            let imageUrl: string = room.imageUrl;
             if (fileList.length > 0) {
                 const data = await RoomsAPI.uploadPhoto(fileList[0]);
                 imageUrl = data.url;
