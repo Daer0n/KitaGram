@@ -35,6 +35,7 @@ interface Room {
     participants: number;
     participantsLimit: number;
     isUserInRoom: boolean;
+    priorityCount: number;
 }
 
 const RoomList: React.FC = () => {
@@ -62,6 +63,7 @@ const RoomList: React.FC = () => {
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
                         isUserInRoom: room.is_user_in_room,
+                        priorityCount: room.priority_count,
                     };
                 }),
             );
@@ -92,7 +94,7 @@ const RoomList: React.FC = () => {
         <div>
             <Search setRooms={setRooms} setError={setError} setLoading={setLoading} />
             <RoomsContainer>
-                {rooms.map((room) => (
+                {rooms.sort((a, b) => b.priorityCount - a.priorityCount).map((room) => (
                     <RoomItem
                         key={room.id}
                         onClick={() => setSelectedRoom(room)}
