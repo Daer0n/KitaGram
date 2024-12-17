@@ -9,7 +9,7 @@ export const Container = styled.div`
 
 export const Element = styled.div<{ isSelected: boolean }>`
     border-radius: 20px;
-    background-color: ${({ isSelected }) => (isSelected ? '#c0c0c0' : '#d9d9d9')};
+    background-color: ${({ isSelected }) => (isSelected ? '#ff5c5c' : '#d9d9d9')};
     display: flex;
     padding: 10px;
     justify-content: center;
@@ -22,6 +22,6 @@ export const Element = styled.div<{ isSelected: boolean }>`
     white-space: nowrap;
 
     &:hover {
-        background-color: ${({ isSelected }) => (isSelected ? '#b0b0b0' : '#c0c0c0')};
+        background-color: ${({ isSelected }) => (isSelected ? '#ff5c5c' : '#c0c0c0')};
     }
 `;

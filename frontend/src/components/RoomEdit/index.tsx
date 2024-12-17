@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, notification, Upload, Modal, Select, Row, Col } from 'antd';
 import { RoomsAPI } from '@api';
+import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 import { UploadOutlined } from '@ant-design/icons';
 import { ImagePreview } from './styled';
+import { Tag } from '@types';
 
 interface Room {
     id: number;
@@ -16,6 +18,7 @@ interface Room {
     category: string;
     participantsLimit: number;
     isUserInRoom: boolean;
+    location: string;
 }
 
 interface RoomEditProps {
@@ -36,34 +39,43 @@ const categories = [
 
 const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoom }) => {
     const [form] = Form.useForm();
+    const [coordinates, setCoordinates] = useState<number[]>([53.9045, 27.559]);
+    const [tags, setTags] = useState<Tag[]>([]);
 
     useEffect(() => {
+        const fetchData = async () => {
+            const data = await RoomsAPI.tags();
+            setTags(data);
+        };
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        if (room && room.location) {
+            try {
+                const parsedLocation = JSON.parse(room.location);
+                console.log(parsedLocation);
+                setCoordinates(parsedLocation);
+            } catch (error) {
+                console.error('Ошибка при парсинге местоположения:', error);
+            }
+        }
+
         form.setFieldsValue({
             name: room.name,
             description: room.description,
             imageUrl: room.imageUrl,
             category: room.category,
-            participants: room.participants,
             participantsLimit: room.participantsLimit,
         });
     }, [room, form]);
 
     const handleSave = async (values: any) => {
         try {
-            // Uncomment this line to implement the update logic
-            // const updatedRoom = await RoomsAPI.updateRoom(room.id, {
-            //     name: values.name,
-            //     description: values.description,
-            //     imageUrl: values.imageUrl,
-            //     category: values.category,
-            //     participants: values.participants,
-            //     participantsLimit: values.participantsLimit,
-            //     tags: room.tags, // Assuming tags are unchanged
-            // });
             notification.success({
                 message: 'Комната успешно обновлена!',
             });
-            // onUpdateRoom(updatedRoom);
             onClose();
         } catch (error) {
             console.error('Ошибка при обновлении комнаты:', error);
@@ -71,6 +83,12 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
                 message: 'Ошибка при обновлении комнаты',
             });
         }
+    };
+
+    const handleMapClick = (event: any) => {
+        const coords = event.get('coords');
+        setCoordinates(coords);
+        form.setFieldsValue({ location: JSON.stringify(coords) });
     };
 
     return (
@@ -122,10 +140,10 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
 
                         <Form.Item
                             label="Количество участников"
-                            name="participants"
+                            name="participantsLimit"
                             rules={[{ required: true, message: 'Введите количество участников!' }]}
                         >
-                            <Input type="number" min={0} />
+                            <Input type="number" min={1} />
                         </Form.Item>
 
                         <Form.Item label="Загрузить изображение">
@@ -152,6 +170,22 @@ const RoomEdit: React.FC<RoomEditProps> = ({ room, visible, onClose, onUpdateRoo
                         alt="Room Preview"
                         style={{ width: '600px', height: '400px' }}
                     />
+
+                    <YMaps>
+                        <Map
+                            defaultState={{ center: coordinates, zoom: 9 }}
+                            style={{ width: '600px', height: '400px', marginTop: '50px' }}
+                            onClick={handleMapClick}
+                        >
+                            <Placemark
+                                geometry={coordinates}
+                                options={{
+                                    preset: 'islands#icon',
+                                    iconColor: '#0095b6',
+                                }}
+                            />
+                        </Map>
+                    </YMaps>
                 </Col>
             </Row>
         </Modal>

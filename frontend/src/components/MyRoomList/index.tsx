@@ -36,6 +36,7 @@ interface Room {
     category: string;
     participantsLimit: number;
     isUserInRoom: boolean;
+    location: string;
 }
 
 const MyRoomList: React.FC = () => {
@@ -68,6 +69,7 @@ const MyRoomList: React.FC = () => {
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
                         isUserInRoom,
+                        location: room.location,
                     };
                 }),
             );
@@ -102,6 +104,7 @@ const MyRoomList: React.FC = () => {
                         participants: room.participants,
                         participantsLimit: room.participants_limit,
                         isUserInRoom,
+                        location: room.location,
                     };
                 }),
             );
@@ -112,9 +115,12 @@ const MyRoomList: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchJoinedRooms();
         fetchMyRooms();
-    }, []);
+    }, [myRooms]);
+
+    useEffect(() => {
+        fetchJoinedRooms();
+    }, [joinedRooms]);
 
     const updateParticipantsCount = (roomId: number, newCount: number) => {
         setJoinedRooms((prevRooms) =>
@@ -126,74 +132,84 @@ const MyRoomList: React.FC = () => {
 
     return (
         <Container>
-            <Content>
-                <Title>Мои комнаты</Title>
-                <RoomsContainer>
-                    {joinedRooms.map((room) => (
-                        <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
-                            <RoomsImgContainer>
-                                <RoomsImg src={room.imageUrl} alt={room.name} />
-                            </RoomsImgContainer>
-                            <RoomsDataContainer>
-                                <RoomGeneralData>
-                                    <RoomType>{room.category}</RoomType>
-                                    <RoomTitle>{room.name}</RoomTitle>
-                                    <RoomUsers>
-                                        <div>
-                                            {room.participants}/{room.participantsLimit}
-                                        </div>
-                                        <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
-                                    </RoomUsers>
-                                </RoomGeneralData>
-                                <RoomDateTime>
-                                    <RoomDate>{room.date}</RoomDate>
-                                    <RoomTime>{room.time}</RoomTime>
-                                </RoomDateTime>
-                            </RoomsDataContainer>
-                        </RoomItem>
-                    ))}
-                </RoomsContainer>
-            </Content>
+            {joinedRooms.length > 0 && (
+                <Content>
+                    <Title>Вы участвуете</Title>
+                    <RoomsContainer>
+                        {joinedRooms.map((room) => (
+                            <RoomItem key={room.id} onClick={() => setSelectedRoom(room)}>
+                                <RoomsImgContainer>
+                                    <RoomsImg src={room.imageUrl} alt={room.name} />
+                                </RoomsImgContainer>
+                                <RoomsDataContainer>
+                                    <RoomGeneralData>
+                                        <RoomType>{room.category}</RoomType>
+                                        <RoomTitle>{room.name}</RoomTitle>
+                                        <RoomUsers>
+                                            <div>
+                                                {room.participants}/{room.participantsLimit}
+                                            </div>
+                                            <RoomUsersImg
+                                                src={DefaultAvatar}
+                                                alt="default avatar"
+                                            />
+                                        </RoomUsers>
+                                    </RoomGeneralData>
+                                    <RoomDateTime>
+                                        <RoomDate>{room.date}</RoomDate>
+                                        <RoomTime>{room.time}</RoomTime>
+                                    </RoomDateTime>
+                                </RoomsDataContainer>
+                            </RoomItem>
+                        ))}
+                    </RoomsContainer>
+                </Content>
+            )}
 
-            <Content>
-                <Title>Созданные комнаты</Title>
-                <RoomsContainer>
-                    {myRooms.map((room) => (
-                        <RoomItem
-                            key={room.id}
-                            onClick={() => {
-                                setSelectedRoom(room);
-                                setIsEditing(true);
-                            }}
-                        >
-                            <RoomsImgContainer>
-                                <RoomsImg src={room.imageUrl} alt={room.name} />
-                            </RoomsImgContainer>
-                            <RoomsDataContainer>
-                                <RoomGeneralData>
-                                    <RoomType>{room.category}</RoomType>
-                                    <RoomTitle>{room.name}</RoomTitle>
-                                    <RoomUsers>
-                                        <div>
-                                            {room.participants}/{room.participantsLimit}
-                                        </div>
-                                        <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
-                                    </RoomUsers>
-                                </RoomGeneralData>
-                                <RoomDateTime>
-                                    <RoomDate>{room.date}</RoomDate>
-                                    <RoomTime>{room.time}</RoomTime>
-                                </RoomDateTime>
-                            </RoomsDataContainer>
-                        </RoomItem>
-                    ))}
-                </RoomsContainer>
-            </Content>
+            {myRooms.length > 0 && (
+                <Content>
+                    <Title>Вы создали</Title>
+                    <RoomsContainer>
+                        {myRooms.map((room) => (
+                            <RoomItem
+                                key={room.id}
+                                onClick={() => {
+                                    setSelectedRoom(room);
+                                    setIsEditing(true);
+                                }}
+                            >
+                                <RoomsImgContainer>
+                                    <RoomsImg src={room.imageUrl} alt={room.name} />
+                                </RoomsImgContainer>
+                                <RoomsDataContainer>
+                                    <RoomGeneralData>
+                                        <RoomType>{room.category}</RoomType>
+                                        <RoomTitle>{room.name}</RoomTitle>
+                                        <RoomUsers>
+                                            <div>
+                                                {room.participants}/{room.participantsLimit}
+                                            </div>
+                                            <RoomUsersImg
+                                                src={DefaultAvatar}
+                                                alt="default avatar"
+                                            />
+                                        </RoomUsers>
+                                    </RoomGeneralData>
+                                    <RoomDateTime>
+                                        <RoomDate>{room.date}</RoomDate>
+                                        <RoomTime>{room.time}</RoomTime>
+                                    </RoomDateTime>
+                                </RoomsDataContainer>
+                            </RoomItem>
+                        ))}
+                    </RoomsContainer>
+                </Content>
+            )}
 
             {selectedRoom && isEditing && (
                 <RoomEdit
                     room={selectedRoom}
-                    visible={isEditing} 
+                    visible={isEditing}
                     onClose={() => {
                         setIsEditing(false);
                         setSelectedRoom(null);
