@@ -1,7 +1,7 @@
 import boto3
 from uuid import UUID
 from django.conf import settings
-from django.db.models import Avg, F
+from django.db.models import Sum, F
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -48,7 +48,7 @@ class FeedViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         queryset = (
             queryset.annotate(
-                priority_score=Avg(
+                priority_score=Sum(
                     F('tags__priority__count'),
                     filter=F('tags__priority__user_id') == user_id
                 )
@@ -144,6 +144,14 @@ class TagViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Generi
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = (
+            Tag.objects.annotate(priority_count=Sum('priority__count'))
+            .order_by('-priority_count')
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class PhotoViewSet(viewsets.ViewSet):
