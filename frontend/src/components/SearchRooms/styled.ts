@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-// Styled Components
 export const SearchFilterInputContainer = styled.div`
     display: flex;
     flex-direction: column;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { notification } from 'antd';
 import { RoomsAPI } from '@api';
 import {
     SearchInput,

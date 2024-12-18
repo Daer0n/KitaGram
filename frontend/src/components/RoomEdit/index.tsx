@@ -13,8 +13,8 @@ interface Room {
     description: string;
     imageUrl: string;
     tags: number[];
-    date: string; // Дата
-    time: string; // Время
+    date: string; 
+    time: string; 
     participants: number;
     category: string;
     participantsLimit: number;

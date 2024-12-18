@@ -18,9 +18,7 @@ import {
 import { Search } from '@components/SearchRooms';
 import { RoomDetails } from '@components/RoomDetails';
 import { RoomsAPI } from '@api';
-import { notification } from 'antd';
 import { useFetching } from '@hooks';
-import Cookies from 'js-cookie';
 
 interface Room {
     id: number;
@@ -94,34 +92,36 @@ const RoomList: React.FC = () => {
         <div>
             <Search setRooms={setRooms} setError={setError} setLoading={setLoading} />
             <RoomsContainer>
-                {rooms.sort((a, b) => b.priorityCount - a.priorityCount).map((room) => (
-                    <RoomItem
-                        key={room.id}
-                        onClick={() => setSelectedRoom(room)}
-                        $isUserInRoom={room.isUserInRoom}
-                    >
-                        <RoomsImgContainer>
-                            <RoomsImg src={room.imageUrl} />
-                        </RoomsImgContainer>
-                        <RoomsDataContainer>
-                            <RoomGeneralData>
-                                <RoomType>{room.category}</RoomType>
-                                <RoomTitle>{room.name}</RoomTitle>
-                                <RoomUsers>
-                                    <div>
-                                        {room.participants}/{room.participantsLimit}
-                                    </div>
-                                    <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
-                                </RoomUsers>
-                            </RoomGeneralData>
+                {rooms
+                    .sort((a, b) => b.priorityCount - a.priorityCount)
+                    .map((room) => (
+                        <RoomItem
+                            key={room.id}
+                            onClick={() => setSelectedRoom(room)}
+                            $isUserInRoom={room.isUserInRoom}
+                        >
+                            <RoomsImgContainer>
+                                <RoomsImg src={room.imageUrl} />
+                            </RoomsImgContainer>
+                            <RoomsDataContainer>
+                                <RoomGeneralData>
+                                    <RoomType>{room.category}</RoomType>
+                                    <RoomTitle>{room.name}</RoomTitle>
+                                    <RoomUsers>
+                                        <div>
+                                            {room.participants}/{room.participantsLimit}
+                                        </div>
+                                        <RoomUsersImg src={DefaultAvatar} alt="default avatar" />
+                                    </RoomUsers>
+                                </RoomGeneralData>
 
-                            <RoomDateTime>
-                                <RoomDate>{room.date}</RoomDate>
-                                <RoomTime>{room.time}</RoomTime>
-                            </RoomDateTime>
-                        </RoomsDataContainer>
-                    </RoomItem>
-                ))}
+                                <RoomDateTime>
+                                    <RoomDate>{room.date}</RoomDate>
+                                    <RoomTime>{room.time}</RoomTime>
+                                </RoomDateTime>
+                            </RoomsDataContainer>
+                        </RoomItem>
+                    ))}
             </RoomsContainer>
             {selectedRoom && (
                 <RoomDetails
